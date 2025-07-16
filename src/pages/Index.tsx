@@ -26,6 +26,7 @@ const Index = () => {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [formData, setFormData] = useState({
     campaignType: "Default",
     campaignName: "",
@@ -116,12 +117,16 @@ const Index = () => {
               <CardTitle>Campaign Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <div className="flex-1 space-y-2">
                   <Label htmlFor="campaignType">Existing Campaign</Label>
                   <Select 
                     value={formData.campaignType} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, campaignType: value }))}
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, campaignType: value }));
+                      setIsCreatingNew(false);
+                    }}
+                    disabled={isCreatingNew}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select existing campaign" />
@@ -135,80 +140,95 @@ const Index = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-6 w-10 h-10 rounded-full p-0"
+                  onClick={() => {
+                    setIsCreatingNew(!isCreatingNew);
+                    if (!isCreatingNew) {
+                      setFormData(prev => ({ ...prev, campaignType: "", campaignName: "" }));
+                    }
+                  }}
+                >
+                  +
+                </Button>
+              </div>
+              {isCreatingNew && (
                 <div className="space-y-2">
                   <Label htmlFor="campaignName">Campaign Name</Label>
                   <Input
                     id="campaignName"
-                    placeholder="Enter campaign name"
+                    placeholder="Enter new campaign name"
                     value={formData.campaignName}
                     onChange={(e) => setFormData(prev => ({ ...prev, campaignName: e.target.value }))}
                   />
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
           {/* Ad Type Selection */}
           <Card>
-            <CardHeader>
-              <CardTitle>Ad Type & Media Upload</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="adType">Select Ad Type</Label>
-                <Select 
-                  value={formData.adType} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, adType: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose ad type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {adTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <CardContent className="space-y-6 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="adType">Select Ad Type</Label>
+                  <Select 
+                    value={formData.adType} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, adType: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose ad type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {adTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* File Upload */}
-              <div className="space-y-2">
-                <Label>Upload Media File</Label>
-                <div
-                  className={cn(
-                    "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
-                    dragActive
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary hover:bg-primary/5"
-                  )}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-2">
-                    Drag and drop your file here, or click to browse
-                  </p>
-                  <Button type="button" variant="outline">
-                    Browse Files
-                  </Button>
-                  {formData.file && (
-                    <p className="text-sm text-primary mt-2">
-                      Selected: {formData.file.name}
+                {/* File Upload */}
+                <div className="space-y-2">
+                  <Label>Upload Media File</Label>
+                  <div
+                    className={cn(
+                      "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
+                      dragActive
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary hover:bg-primary/5"
+                    )}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                  >
+                    <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Drag & drop or browse
                     </p>
-                  )}
+                    <Button type="button" variant="outline" size="sm">
+                      Browse
+                    </Button>
+                    {formData.file && (
+                      <p className="text-xs text-primary mt-2">
+                        {formData.file.name}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Fast Channel Options */}
+          {/* Select Fast Channel */}
           <Card>
             <CardHeader>
-              <CardTitle>Fast Channel Options</CardTitle>
+              <CardTitle>Select Fast Channel</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
@@ -232,25 +252,26 @@ const Index = () => {
               <CardTitle>Scheduling</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Date Pickers */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Date and Time Pickers */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="space-y-2">
-                  <Label>Start Date</Label>
+                  <Label className="text-sm">Start Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
+                        size="sm"
                         className={cn(
-                          "w-full pl-3 text-left font-normal",
+                          "w-full pl-2 text-left font-normal text-xs",
                           !formData.startDate && "text-muted-foreground"
                         )}
                       >
                         {formData.startDate ? (
-                          format(formData.startDate, "PPP")
+                          format(formData.startDate, "dd/MM")
                         ) : (
-                          <span>Pick start date</span>
+                          <span>Start Date</span>
                         )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -266,22 +287,23 @@ const Index = () => {
                   </Popover>
                 </div>
                 <div className="space-y-2">
-                  <Label>End Date</Label>
+                  <Label className="text-sm">End Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
+                        size="sm"
                         className={cn(
-                          "w-full pl-3 text-left font-normal",
+                          "w-full pl-2 text-left font-normal text-xs",
                           !formData.endDate && "text-muted-foreground"
                         )}
                       >
                         {formData.endDate ? (
-                          format(formData.endDate, "PPP")
+                          format(formData.endDate, "dd/MM")
                         ) : (
-                          <span>Pick end date</span>
+                          <span>End Date</span>
                         )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -296,24 +318,22 @@ const Index = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-              </div>
-
-              {/* Time Inputs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="startTime">Start Time</Label>
+                  <Label htmlFor="startTime" className="text-sm">Start Time</Label>
                   <Input
                     id="startTime"
                     type="time"
+                    className="text-xs h-8"
                     value={formData.startTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="endTime">End Time</Label>
+                  <Label htmlFor="endTime" className="text-sm">End Time</Label>
                   <Input
                     id="endTime"
                     type="time"
+                    className="text-xs h-8"
                     value={formData.endTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
                   />
@@ -354,12 +374,13 @@ const Index = () => {
                 
                 {formData.loopCampaign && (
                   <div className="space-y-2">
-                    <Label htmlFor="loopFrequency">Loop Frequency (0-100)</Label>
+                    <Label htmlFor="loopFrequency" className="text-sm">Loop Frequency (0-100)</Label>
                     <Input
                       id="loopFrequency"
                       type="number"
                       min="0"
                       max="100"
+                      className="w-24 text-xs h-8"
                       value={formData.loopFrequency}
                       onChange={(e) => setFormData(prev => ({ 
                         ...prev, 
