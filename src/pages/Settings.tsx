@@ -330,26 +330,29 @@ const Settings = () => {
               <Card className="bg-white border border-gray-200 shadow-sm">
                 <CardContent className="p-6 space-y-6">
                   {/* Search and Filter Controls */}
-                  <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                  <div className="flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-center pt-2">
                     <h2 className="text-xl font-semibold text-gray-900">Campaign Management</h2>
                     
-                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
                       {/* Campaign Search */}
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          placeholder="Enter name"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10 w-full sm:w-64 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        />
-                        <span className="absolute -top-5 left-0 text-xs text-gray-500">Campaign Search</span>
+                      <div className="space-y-1">
+                        <span className="text-xs text-gray-500">Campaign Search</span>
+                        <div className="relative">
+                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+                          <Input
+                            placeholder="Enter name"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-7 h-8 text-sm w-full sm:w-48 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          />
+                        </div>
                       </div>
 
                       {/* Campaign Filter */}
-                      <div className="relative">
+                      <div className="space-y-1">
+                        <span className="text-xs text-gray-500">Campaign</span>
                         <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
-                          <SelectTrigger className="w-full sm:w-48 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="h-8 w-full sm:w-40 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Select campaign" />
                           </SelectTrigger>
                           <SelectContent className="bg-white border border-gray-200 shadow-lg">
@@ -361,16 +364,19 @@ const Settings = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <span className="absolute -top-5 left-0 text-xs text-gray-500">Campaign</span>
                       </div>
 
                       {/* Create New Button */}
-                      <Button 
-                        onClick={handleCreateNew}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 transition-colors"
-                      >
-                        Create New
-                      </Button>
+                      <div className="space-y-1">
+                        <span className="text-xs text-transparent">Create New</span>
+                        <Button 
+                          onClick={handleCreateNew}
+                          size="sm"
+                          className="h-8 bg-blue-600 hover:bg-blue-700 text-white px-4 text-sm transition-colors"
+                        >
+                          Create New
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
