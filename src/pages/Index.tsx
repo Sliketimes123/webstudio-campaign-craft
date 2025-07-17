@@ -98,130 +98,121 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 font-roboto">
       {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-3">
-          <h1 className="text-lg font-bold text-center text-foreground">
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="container mx-auto px-6 py-4">
+          <h1 className="text-xl font-medium text-center text-gray-900">
             Manage Ad Campaign – WebStudio (24/7 Events)
           </h1>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-6 max-w-4xl">
-        <form onSubmit={onSubmit} className="space-y-6">
+      <div className="container mx-auto px-6 py-8 max-w-4xl">
+        <form onSubmit={onSubmit} className="space-y-8">
           {/* Campaign Details */}
-          <Card>
-            <CardContent className="pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="campaignName" className="text-sm">Campaign Name</Label>
-                <Input
-                  id="campaignName"
-                  placeholder="Enter campaign name"
-                  value={formData.campaignName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, campaignName: e.target.value }))}
-                  className="h-8"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="space-y-3">
+              <Label htmlFor="campaignName" className="text-sm font-medium text-gray-700">Campaign Name</Label>
+              <Input
+                id="campaignName"
+                placeholder="Enter campaign name"
+                value={formData.campaignName}
+                onChange={(e) => setFormData(prev => ({ ...prev, campaignName: e.target.value }))}
+                className="h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
           {/* Ad Type Selection */}
-          <Card>
-            <CardContent className="pt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="adType" className="text-sm">Select Ad Type</Label>
-                  <Select 
-                    value={formData.adType} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, adType: value }))}
-                  >
-                    <SelectTrigger className="h-8">
-                      <SelectValue placeholder="Choose ad type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {adTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <Label htmlFor="adType" className="text-sm font-medium text-gray-700">Select Ad Type</Label>
+                <Select 
+                  value={formData.adType} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, adType: value }))}
+                >
+                  <SelectTrigger className="h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue placeholder="Choose ad type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                    {adTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {/* File Upload */}
-                <div className="space-y-2">
-                  <Label className="text-sm">Upload Media File</Label>
-                  <div
-                    className={cn(
-                      "border-2 border-dashed rounded-lg p-3 text-center cursor-pointer transition-colors",
-                      dragActive
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary hover:bg-primary/5"
-                    )}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                  >
-                    <Upload className="mx-auto h-6 w-6 text-muted-foreground mb-1" />
-                    <p className="text-xs text-muted-foreground mb-1">
-                      Drag & drop or browse
+              {/* File Upload */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-700">Upload Media File</Label>
+                <div
+                  className={cn(
+                    "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
+                    dragActive
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
+                  )}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600 mb-2">
+                    Drag & drop or browse
+                  </p>
+                  <Button type="button" variant="outline" size="sm" className="h-8 text-sm border-gray-300 hover:bg-gray-50">
+                    Browse
+                  </Button>
+                  {formData.file && (
+                    <p className="text-sm text-blue-600 mt-2">
+                      {formData.file.name}
                     </p>
-                    <Button type="button" variant="outline" size="sm" className="h-6 text-xs">
-                      Browse
-                    </Button>
-                    {formData.file && (
-                      <p className="text-xs text-primary mt-1">
-                        {formData.file.name}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Select Fast Channel */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Select Fast Channel</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                {channels.map((channel) => (
-                  <div key={channel} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={channel}
-                      checked={selectedChannels.includes(channel)}
-                      onCheckedChange={() => toggleChannel(channel)}
-                    />
-                    <Label htmlFor={channel} className="text-sm">{channel}</Label>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Select Fast Channel</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {channels.map((channel) => (
+                <div key={channel} className="flex items-center space-x-3">
+                  <Checkbox
+                    id={channel}
+                    checked={selectedChannels.includes(channel)}
+                    onCheckedChange={() => toggleChannel(channel)}
+                    className="border-gray-300"
+                  />
+                  <Label htmlFor={channel} className="text-sm text-gray-700">{channel}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Scheduling */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Scheduling</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-6">Scheduling</h3>
+            <div className="space-y-6">
               {/* Date and Time Pickers */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs">Start Date</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Start Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         size="sm"
                         className={cn(
-                          "w-full pl-2 text-left font-normal text-xs h-7",
-                          !formData.startDate && "text-muted-foreground"
+                          "w-full pl-3 text-left font-normal text-sm h-10 border-gray-300 focus:border-blue-500",
+                          !formData.startDate && "text-gray-500"
                         )}
                       >
                         {formData.startDate ? (
@@ -229,10 +220,10 @@ const Index = () => {
                         ) : (
                           <span>Start Date</span>
                         )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg" align="start">
                       <Calendar
                         mode="single"
                         selected={formData.startDate}
@@ -244,16 +235,16 @@ const Index = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">End Date</Label>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">End Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         size="sm"
                         className={cn(
-                          "w-full pl-2 text-left font-normal text-xs h-7",
-                          !formData.endDate && "text-muted-foreground"
+                          "w-full pl-3 text-left font-normal text-sm h-10 border-gray-300 focus:border-blue-500",
+                          !formData.endDate && "text-gray-500"
                         )}
                       >
                         {formData.endDate ? (
@@ -261,10 +252,10 @@ const Index = () => {
                         ) : (
                           <span>End Date</span>
                         )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg" align="start">
                       <Calendar
                         mode="single"
                         selected={formData.endDate}
@@ -276,22 +267,22 @@ const Index = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="startTime" className="text-xs">Start Time</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="startTime" className="text-sm font-medium text-gray-700">Start Time</Label>
                   <Input
                     id="startTime"
                     type="time"
-                    className="text-xs h-7"
+                    className="text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                     value={formData.startTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="endTime" className="text-xs">End Time</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="endTime" className="text-sm font-medium text-gray-700">End Time</Label>
                   <Input
                     id="endTime"
                     type="time"
-                    className="text-xs h-7"
+                    className="text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                     value={formData.endTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
                   />
@@ -299,23 +290,28 @@ const Index = () => {
               </div>
 
               {/* Day Selection */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <Label className="text-sm">Repeat Frequency</Label>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <Label className="text-sm font-medium text-gray-700">Repeat Frequency</Label>
                   <Switch
                     checked={repeatFrequencyEnabled}
                     onCheckedChange={setRepeatFrequencyEnabled}
                   />
                 </div>
                 {repeatFrequencyEnabled && (
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {days.map((day) => (
                       <Button
                         key={day.key}
                         type="button"
                         variant={selectedDays.includes(day.key) ? "default" : "outline"}
                         size="sm"
-                        className="w-8 h-8 rounded-full p-0 text-xs"
+                        className={cn(
+                          "w-10 h-10 rounded-full p-0 text-sm",
+                          selectedDays.includes(day.key)
+                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                            : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                        )}
                         onClick={() => toggleDay(day.key)}
                       >
                         {day.key}
@@ -326,27 +322,28 @@ const Index = () => {
               </div>
 
               {/* Loop Campaign */}
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="loopCampaign"
                     checked={formData.loopCampaign}
                     onCheckedChange={(checked) => 
                       setFormData(prev => ({ ...prev, loopCampaign: !!checked }))
                     }
+                    className="border-gray-300"
                   />
-                  <Label htmlFor="loopCampaign" className="text-sm">Run Campaign in Loop</Label>
+                  <Label htmlFor="loopCampaign" className="text-sm text-gray-700">Run Campaign in Loop</Label>
                 </div>
                 
                 {formData.loopCampaign && (
-                  <div className="space-y-1">
-                    <Label htmlFor="loopFrequency" className="text-xs">Loop Frequency (0-100)</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="loopFrequency" className="text-sm font-medium text-gray-700">Loop Frequency (0-100)</Label>
                     <Input
                       id="loopFrequency"
                       type="number"
                       min="0"
                       max="100"
-                      className="w-20 text-xs h-7"
+                      className="w-24 text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       value={formData.loopFrequency}
                       onChange={(e) => setFormData(prev => ({ 
                         ...prev, 
@@ -356,18 +353,21 @@ const Index = () => {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-center gap-4">
-            <Button type="submit" className="px-6 py-1.5 text-sm rounded-lg hover:opacity-90 transition-opacity">
+          <div className="flex justify-center gap-6 pt-4">
+            <Button 
+              type="submit" 
+              className="px-8 py-3 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
+            >
               Save Campaign
             </Button>
             <Button 
               type="button" 
               variant="outline" 
-              className="px-6 py-1.5 text-sm rounded-lg hover:bg-accent transition-colors"
+              className="px-8 py-3 text-sm font-medium rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </Button>
