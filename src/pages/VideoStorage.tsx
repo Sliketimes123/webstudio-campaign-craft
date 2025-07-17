@@ -14,7 +14,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import Sidebar from "@/components/Sidebar";
 
 const VideoStorage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,10 +33,20 @@ const VideoStorage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Sidebar />
-      
+      {/* Sidebar placeholder - would contain navigation icons */}
+      <div className="fixed left-0 top-0 w-12 h-full bg-white border-r border-slate-200 flex flex-col items-center py-4 space-y-4">
+        <div className="w-6 h-6 bg-orange-500 rounded"></div>
+        <div className="w-6 h-6 bg-blue-500 rounded"></div>
+        <div className="w-6 h-6 bg-slate-300 rounded"></div>
+        <div className="w-6 h-6 bg-slate-300 rounded"></div>
+        <div className="w-6 h-6 bg-slate-300 rounded"></div>
+        <div className="w-6 h-6 bg-slate-300 rounded"></div>
+        <div className="w-6 h-6 bg-slate-300 rounded"></div>
+        <div className="w-6 h-6 bg-slate-300 rounded"></div>
+      </div>
+
       {/* Main Content */}
-      <div className="ml-16 p-6">
+      <div className="ml-12 p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-semibold text-slate-700 flex items-center gap-2">
