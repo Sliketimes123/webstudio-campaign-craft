@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { CalendarIcon, Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,8 +23,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
@@ -53,13 +59,71 @@ const Index = () => {
     { key: "S", label: "Sat" },
   ];
 
+  const validateForm = () => {
+    if (!formData.campaignName.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Campaign name is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    if (!formData.adType) {
+      toast({
+        title: "Validation Error", 
+        description: "Ad type selection is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    if (selectedChannels.length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "At least one channel must be selected",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    return true;
+  };
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Campaign data:", {
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    const campaignData = {
       ...formData,
       channels: selectedChannels,
-      selectedDays,
+      selectedDays: repeatFrequencyEnabled ? selectedDays : [],
+      repeatFrequencyEnabled,
+      createdAt: new Date().toISOString(),
+      id: Date.now().toString(), // Simple ID generation
+    };
+    
+    // Save to localStorage for demonstration
+    const existingCampaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+    existingCampaigns.push(campaignData);
+    localStorage.setItem('campaigns', JSON.stringify(existingCampaigns));
+    
+    toast({
+      title: "Success!",
+      description: `Campaign "${formData.campaignName}" saved successfully`,
     });
+    
+    // Redirect to settings page after saving
+    setTimeout(() => {
+      navigate('/settings');
+    }, 1500);
+  };
+
+  const handleCancel = () => {
+    navigate(-1); // Go back to previous page
   };
 
   const toggleDay = (dayKey: string) => {
@@ -367,6 +431,7 @@ const Index = () => {
             <Button 
               type="button" 
               variant="outline" 
+              onClick={handleCancel}
               className="px-8 py-3 text-sm font-medium rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
@@ -374,6 +439,7 @@ const Index = () => {
           </div>
         </form>
       </div>
+      <Toaster />
     </div>
   );
 };
