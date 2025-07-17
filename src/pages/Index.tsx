@@ -113,10 +113,7 @@ const Index = () => {
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Campaign Details */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Campaign Details</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-4">
               <div className="space-y-2">
                 <Label htmlFor="campaignName" className="text-sm">Campaign Name</Label>
                 <Input
