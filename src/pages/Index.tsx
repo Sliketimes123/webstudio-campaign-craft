@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -26,9 +27,8 @@ const Index = () => {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
   const [formData, setFormData] = useState({
-    campaignType: "Default",
     campaignName: "",
     adType: "",
     file: null as File | null,
@@ -101,85 +101,46 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold text-center text-foreground">
+        <div className="container mx-auto px-6 py-3">
+          <h1 className="text-lg font-bold text-center text-foreground">
             Manage Ad Campaign – WebStudio (24/7 Events)
           </h1>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-8 max-w-4xl">
-        <form onSubmit={onSubmit} className="space-y-8">
+      <div className="container mx-auto px-6 py-6 max-w-4xl">
+        <form onSubmit={onSubmit} className="space-y-6">
           {/* Campaign Details */}
           <Card>
-            <CardHeader>
-              <CardTitle>Campaign Details</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Campaign Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor="campaignType">Existing Campaign</Label>
-                  <Select 
-                    value={formData.campaignType} 
-                    onValueChange={(value) => {
-                      setFormData(prev => ({ ...prev, campaignType: value }));
-                      setIsCreatingNew(false);
-                    }}
-                    disabled={isCreatingNew}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select existing campaign" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {existingCampaigns.map((campaign) => (
-                        <SelectItem key={campaign} value={campaign}>
-                          {campaign}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-6 w-10 h-10 rounded-full p-0"
-                  onClick={() => {
-                    setIsCreatingNew(!isCreatingNew);
-                    if (!isCreatingNew) {
-                      setFormData(prev => ({ ...prev, campaignType: "", campaignName: "" }));
-                    }
-                  }}
-                >
-                  +
-                </Button>
+            <CardContent>
+              <div className="space-y-2">
+                <Label htmlFor="campaignName" className="text-sm">Campaign Name</Label>
+                <Input
+                  id="campaignName"
+                  placeholder="Enter campaign name"
+                  value={formData.campaignName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, campaignName: e.target.value }))}
+                  className="h-8"
+                />
               </div>
-              {isCreatingNew && (
-                <div className="space-y-2">
-                  <Label htmlFor="campaignName">Campaign Name</Label>
-                  <Input
-                    id="campaignName"
-                    placeholder="Enter new campaign name"
-                    value={formData.campaignName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, campaignName: e.target.value }))}
-                  />
-                </div>
-              )}
             </CardContent>
           </Card>
 
           {/* Ad Type Selection */}
           <Card>
-            <CardContent className="space-y-6 pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="adType">Select Ad Type</Label>
+                  <Label htmlFor="adType" className="text-sm">Select Ad Type</Label>
                   <Select 
                     value={formData.adType} 
                     onValueChange={(value) => setFormData(prev => ({ ...prev, adType: value }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-8">
                       <SelectValue placeholder="Choose ad type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -194,10 +155,10 @@ const Index = () => {
 
                 {/* File Upload */}
                 <div className="space-y-2">
-                  <Label>Upload Media File</Label>
+                  <Label className="text-sm">Upload Media File</Label>
                   <div
                     className={cn(
-                      "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
+                      "border-2 border-dashed rounded-lg p-3 text-center cursor-pointer transition-colors",
                       dragActive
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary hover:bg-primary/5"
@@ -207,15 +168,15 @@ const Index = () => {
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
                   >
-                    <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground mb-2">
+                    <Upload className="mx-auto h-6 w-6 text-muted-foreground mb-1" />
+                    <p className="text-xs text-muted-foreground mb-1">
                       Drag & drop or browse
                     </p>
-                    <Button type="button" variant="outline" size="sm">
+                    <Button type="button" variant="outline" size="sm" className="h-6 text-xs">
                       Browse
                     </Button>
                     {formData.file && (
-                      <p className="text-xs text-primary mt-2">
+                      <p className="text-xs text-primary mt-1">
                         {formData.file.name}
                       </p>
                     )}
@@ -227,11 +188,11 @@ const Index = () => {
 
           {/* Select Fast Channel */}
           <Card>
-            <CardHeader>
-              <CardTitle>Select Fast Channel</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Select Fast Channel</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {channels.map((channel) => (
                   <div key={channel} className="flex items-center space-x-2">
                     <Checkbox
@@ -239,7 +200,7 @@ const Index = () => {
                       checked={selectedChannels.includes(channel)}
                       onCheckedChange={() => toggleChannel(channel)}
                     />
-                    <Label htmlFor={channel}>{channel}</Label>
+                    <Label htmlFor={channel} className="text-sm">{channel}</Label>
                   </div>
                 ))}
               </div>
@@ -248,21 +209,21 @@ const Index = () => {
 
           {/* Scheduling */}
           <Card>
-            <CardHeader>
-              <CardTitle>Scheduling</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Scheduling</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
               {/* Date and Time Pickers */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="space-y-2">
-                  <Label className="text-sm">Start Date</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs">Start Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         size="sm"
                         className={cn(
-                          "w-full pl-2 text-left font-normal text-xs",
+                          "w-full pl-2 text-left font-normal text-xs h-7",
                           !formData.startDate && "text-muted-foreground"
                         )}
                       >
@@ -286,15 +247,15 @@ const Index = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm">End Date</Label>
+                <div className="space-y-1">
+                  <Label className="text-xs">End Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         size="sm"
                         className={cn(
-                          "w-full pl-2 text-left font-normal text-xs",
+                          "w-full pl-2 text-left font-normal text-xs h-7",
                           !formData.endDate && "text-muted-foreground"
                         )}
                       >
@@ -318,22 +279,22 @@ const Index = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="startTime" className="text-sm">Start Time</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="startTime" className="text-xs">Start Time</Label>
                   <Input
                     id="startTime"
                     type="time"
-                    className="text-xs h-8"
+                    className="text-xs h-7"
                     value={formData.startTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endTime" className="text-sm">End Time</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="endTime" className="text-xs">End Time</Label>
                   <Input
                     id="endTime"
                     type="time"
-                    className="text-xs h-8"
+                    className="text-xs h-7"
                     value={formData.endTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
                   />
@@ -342,25 +303,33 @@ const Index = () => {
 
               {/* Day Selection */}
               <div className="space-y-2">
-                <Label>Repeat Frequency (Day wise)</Label>
-                <div className="flex gap-2">
-                  {days.map((day) => (
-                    <Button
-                      key={day.key}
-                      type="button"
-                      variant={selectedDays.includes(day.key) ? "default" : "outline"}
-                      size="sm"
-                      className="w-10 h-10 rounded-full p-0"
-                      onClick={() => toggleDay(day.key)}
-                    >
-                      {day.key}
-                    </Button>
-                  ))}
+                <div className="flex items-center gap-3">
+                  <Label className="text-sm">Repeat Frequency</Label>
+                  <Switch
+                    checked={repeatFrequencyEnabled}
+                    onCheckedChange={setRepeatFrequencyEnabled}
+                  />
                 </div>
+                {repeatFrequencyEnabled && (
+                  <div className="flex gap-1">
+                    {days.map((day) => (
+                      <Button
+                        key={day.key}
+                        type="button"
+                        variant={selectedDays.includes(day.key) ? "default" : "outline"}
+                        size="sm"
+                        className="w-8 h-8 rounded-full p-0 text-xs"
+                        onClick={() => toggleDay(day.key)}
+                      >
+                        {day.key}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Loop Campaign */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="loopCampaign"
@@ -369,18 +338,18 @@ const Index = () => {
                       setFormData(prev => ({ ...prev, loopCampaign: !!checked }))
                     }
                   />
-                  <Label htmlFor="loopCampaign">Run Campaign in Loop</Label>
+                  <Label htmlFor="loopCampaign" className="text-sm">Run Campaign in Loop</Label>
                 </div>
                 
                 {formData.loopCampaign && (
-                  <div className="space-y-2">
-                    <Label htmlFor="loopFrequency" className="text-sm">Loop Frequency (0-100)</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="loopFrequency" className="text-xs">Loop Frequency (0-100)</Label>
                     <Input
                       id="loopFrequency"
                       type="number"
                       min="0"
                       max="100"
-                      className="w-24 text-xs h-8"
+                      className="w-20 text-xs h-7"
                       value={formData.loopFrequency}
                       onChange={(e) => setFormData(prev => ({ 
                         ...prev, 
@@ -395,13 +364,13 @@ const Index = () => {
 
           {/* Action Buttons */}
           <div className="flex justify-center gap-4">
-            <Button type="submit" className="px-8 py-2 rounded-lg hover:opacity-90 transition-opacity">
+            <Button type="submit" className="px-6 py-1.5 text-sm rounded-lg hover:opacity-90 transition-opacity">
               Save Campaign
             </Button>
             <Button 
               type="button" 
               variant="outline" 
-              className="px-8 py-2 rounded-lg hover:bg-accent transition-colors"
+              className="px-6 py-1.5 text-sm rounded-lg hover:bg-accent transition-colors"
             >
               Cancel
             </Button>
