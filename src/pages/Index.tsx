@@ -22,7 +22,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import Navigation from "@/components/Navigation";
 
 const Index = () => {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -99,11 +98,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white">
+      <div className="border-b border-border bg-card">
         <div className="container mx-auto px-6 py-3">
-          <h1 className="text-lg font-bold text-center text-slate-700">
+          <h1 className="text-lg font-bold text-center text-foreground">
             Manage Ad Campaign – WebStudio (24/7 Events)
           </h1>
         </div>
@@ -111,7 +110,6 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-6 max-w-4xl">
-        <Navigation />
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Campaign Details */}
           <Card>
