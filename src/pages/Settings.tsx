@@ -84,7 +84,7 @@ const Settings = () => {
 
   const filteredData = memberData.filter(item =>
     item.campaignName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (selectedCampaign === "" || item.fastChannel === selectedCampaign)
+    (selectedCampaign === "all" || selectedCampaign === "" || item.fastChannel === selectedCampaign)
   );
 
   return (
@@ -159,7 +159,7 @@ const Settings = () => {
                       <SelectValue placeholder="Select campaign" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Campaigns</SelectItem>
+                      <SelectItem value="all">All Campaigns</SelectItem>
                       {campaignOptions.map((option) => (
                         <SelectItem key={option} value={option}>
                           {option}
