@@ -462,12 +462,12 @@ const Settings = () => {
                                 <div className="flex items-center gap-2">
                                    <Tooltip>
                                      <TooltipTrigger asChild>
-                                       <Button
-                                         variant="ghost"
-                                         size="sm"
-                                         className="h-8 w-8 p-0 hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                         onClick={() => navigate(`/edit-campaign/${item.id}`)}
-                                       >
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-8 w-8 p-0 text-gray-400 cursor-not-allowed"
+                                          disabled
+                                        >
                                          <Edit className="h-4 w-4" />
                                        </Button>
                                      </TooltipTrigger>
