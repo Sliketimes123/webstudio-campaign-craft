@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { format, parse } from "date-fns";
 import { Search, Edit, Eye, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -295,6 +296,19 @@ const Settings = () => {
     setCurrentPage(page);
   };
 
+  // Format date to DD Month YYYY format
+  const formatDateTime = (dateTimeString: string) => {
+    try {
+      // Parse the date from "YYYY-MM-DD HH:mm AM/PM" format
+      const parsedDate = parse(dateTimeString, "yyyy-MM-dd hh:mm a", new Date());
+      // Format to "DD Month YYYY HH:mm AM/PM"
+      return format(parsedDate, "dd MMMM yyyy hh:mm a");
+    } catch (error) {
+      // If parsing fails, return original string
+      return dateTimeString;
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50 font-['Roboto',sans-serif]">
@@ -451,8 +465,8 @@ const Settings = () => {
                                   {item.status}
                                 </span>
                               </TableCell>
-                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{item.startDateTime}</TableCell>
-                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{item.endDateTime}</TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.startDateTime)}</TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.endDateTime)}</TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
                                 <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
                                   {item.repeatFrequency}
