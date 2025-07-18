@@ -48,200 +48,225 @@ const Settings = () => {
       campaignName: "Summer Sale 2024",
       fastChannel: "ET Fast",
       status: "Active",
-      lastLogin: "2024-01-15 10:30 AM",
-      lastActive: "2024-01-15 02:45 PM"
+      startDateTime: "2024-01-15 09:00 AM",
+      endDateTime: "2024-02-15 06:00 PM",
+      repeatFrequency: "Mon, Wed, Fri"
     },
     {
       id: 2,
       campaignName: "Holiday Special",
       fastChannel: "Speaking Tree",
       status: "Inactive",
-      lastLogin: "2024-01-14 08:15 AM",
-      lastActive: "2024-01-14 11:20 AM"
+      startDateTime: "2024-01-14 08:00 AM",
+      endDateTime: "2024-01-31 11:59 PM",
+      repeatFrequency: "Daily"
     },
     {
       id: 3,
       campaignName: "New Year Promo",
       fastChannel: "TOI Global",
       status: "Active",
-      lastLogin: "2024-01-15 09:45 AM",
-      lastActive: "2024-01-15 01:30 PM"
+      startDateTime: "2024-01-01 12:00 AM",
+      endDateTime: "2024-01-07 11:59 PM",
+      repeatFrequency: "Weekends"
     },
     {
       id: 4,
       campaignName: "Sports Week",
       fastChannel: "NBT Entertainment",
       status: "Pending",
-      lastLogin: "2024-01-13 07:30 AM",
-      lastActive: "2024-01-13 10:15 AM"
+      startDateTime: "2024-02-01 06:00 AM",
+      endDateTime: "2024-02-07 10:00 PM",
+      repeatFrequency: "Tue, Thu, Sat"
     },
     {
       id: 5,
       campaignName: "Tech Conference",
       fastChannel: "ET Fast",
       status: "Active",
-      lastLogin: "2024-01-15 11:00 AM",
-      lastActive: "2024-01-15 03:15 PM"
+      startDateTime: "2024-01-20 10:00 AM",
+      endDateTime: "2024-01-22 05:00 PM",
+      repeatFrequency: "Mon, Tue, Wed"
     },
     {
       id: 6,
       campaignName: "Back to School",
       fastChannel: "Speaking Tree",
       status: "Active",
-      lastLogin: "2024-01-14 02:20 PM",
-      lastActive: "2024-01-14 04:45 PM"
+      startDateTime: "2024-08-15 07:00 AM",
+      endDateTime: "2024-09-15 08:00 PM",
+      repeatFrequency: "Weekdays"
     },
     {
       id: 7,
       campaignName: "Black Friday Deals",
       fastChannel: "TOI Global",
       status: "Inactive",
-      lastLogin: "2024-01-13 05:30 PM",
-      lastActive: "2024-01-13 07:15 PM"
+      startDateTime: "2024-11-24 12:00 AM",
+      endDateTime: "2024-11-26 11:59 PM",
+      repeatFrequency: "Fri, Sat, Sun"
     },
     {
       id: 8,
       campaignName: "Winter Collection",
       fastChannel: "NBT Entertainment",
       status: "Active",
-      lastLogin: "2024-01-15 08:45 AM",
-      lastActive: "2024-01-15 12:30 PM"
+      startDateTime: "2024-12-01 08:00 AM",
+      endDateTime: "2024-02-28 09:00 PM",
+      repeatFrequency: "Daily"
     },
     {
       id: 9,
       campaignName: "Valentine's Special",
       fastChannel: "ET Fast",
       status: "Pending",
-      lastLogin: "2024-01-12 11:15 AM",
-      lastActive: "2024-01-12 02:45 PM"
+      startDateTime: "2024-02-10 09:00 AM",
+      endDateTime: "2024-02-14 11:59 PM",
+      repeatFrequency: "Mon, Wed, Fri"
     },
     {
       id: 10,
       campaignName: "Easter Promotion",
       fastChannel: "Speaking Tree",
       status: "Active",
-      lastLogin: "2024-01-15 01:20 PM",
-      lastActive: "2024-01-15 04:10 PM"
+      startDateTime: "2024-03-25 08:00 AM",
+      endDateTime: "2024-04-01 10:00 PM",
+      repeatFrequency: "Weekends"
     },
     {
       id: 11,
       campaignName: "Mother's Day Sale",
       fastChannel: "TOI Global",
       status: "Inactive",
-      lastLogin: "2024-01-11 09:30 AM",
-      lastActive: "2024-01-11 01:20 PM"
+      startDateTime: "2024-05-08 09:00 AM",
+      endDateTime: "2024-05-12 08:00 PM",
+      repeatFrequency: "Thu, Fri, Sat, Sun"
     },
     {
       id: 12,
       campaignName: "Father's Day Special",
       fastChannel: "NBT Entertainment",
       status: "Active",
-      lastLogin: "2024-01-14 03:45 PM",
-      lastActive: "2024-01-14 06:30 PM"
+      startDateTime: "2024-06-15 10:00 AM",
+      endDateTime: "2024-06-16 11:00 PM",
+      repeatFrequency: "Sat, Sun"
     },
     {
       id: 13,
       campaignName: "Independence Day",
       fastChannel: "ET Fast",
       status: "Pending",
-      lastLogin: "2024-01-10 07:15 AM",
-      lastActive: "2024-01-10 10:45 AM"
+      startDateTime: "2024-07-04 07:00 AM",
+      endDateTime: "2024-07-04 11:59 PM",
+      repeatFrequency: "Thu"
     },
     {
       id: 14,
       campaignName: "Labor Day Weekend",
       fastChannel: "Speaking Tree",
       status: "Active",
-      lastLogin: "2024-01-13 12:30 PM",
-      lastActive: "2024-01-13 05:15 PM"
+      startDateTime: "2024-09-01 08:00 AM",
+      endDateTime: "2024-09-03 10:00 PM",
+      repeatFrequency: "Fri, Sat, Sun, Mon"
     },
     {
       id: 15,
       campaignName: "Halloween Special",
       fastChannel: "TOI Global",
       status: "Inactive",
-      lastLogin: "2024-01-09 04:20 PM",
-      lastActive: "2024-01-09 07:45 PM"
+      startDateTime: "2024-10-28 06:00 PM",
+      endDateTime: "2024-10-31 11:59 PM",
+      repeatFrequency: "Mon, Tue, Wed, Thu"
     },
     {
       id: 16,
       campaignName: "Thanksgiving Deals",
       fastChannel: "NBT Entertainment",
       status: "Active",
-      lastLogin: "2024-01-12 10:15 AM",
-      lastActive: "2024-01-12 02:30 PM"
+      startDateTime: "2024-11-25 09:00 AM",
+      endDateTime: "2024-11-28 11:59 PM",
+      repeatFrequency: "Mon, Tue, Wed, Thu"
     },
     {
       id: 17,
       campaignName: "Christmas Campaign",
       fastChannel: "ET Fast",
       status: "Pending",
-      lastLogin: "2024-01-08 06:45 AM",
-      lastActive: "2024-01-08 11:20 AM"
+      startDateTime: "2024-12-20 08:00 AM",
+      endDateTime: "2024-12-25 11:59 PM",
+      repeatFrequency: "Daily"
     },
     {
       id: 18,
       campaignName: "New Year's Eve",
       fastChannel: "Speaking Tree",
       status: "Active",
-      lastLogin: "2024-01-11 02:30 PM",
-      lastActive: "2024-01-11 06:15 PM"
+      startDateTime: "2024-12-31 10:00 PM",
+      endDateTime: "2025-01-01 02:00 AM",
+      repeatFrequency: "Tue, Wed"
     },
     {
       id: 19,
       campaignName: "Spring Collection",
       fastChannel: "TOI Global",
       status: "Inactive",
-      lastLogin: "2024-01-07 08:30 AM",
-      lastActive: "2024-01-07 12:45 PM"
+      startDateTime: "2024-03-01 09:00 AM",
+      endDateTime: "2024-05-31 08:00 PM",
+      repeatFrequency: "Weekdays"
     },
     {
       id: 20,
       campaignName: "Summer Clearance",
       fastChannel: "NBT Entertainment",
       status: "Active",
-      lastLogin: "2024-01-10 01:45 PM",
-      lastActive: "2024-01-10 05:30 PM"
+      startDateTime: "2024-07-01 10:00 AM",
+      endDateTime: "2024-08-31 09:00 PM",
+      repeatFrequency: "Weekends"
     },
     {
       id: 21,
       campaignName: "Flash Sale Monday",
       fastChannel: "ET Fast",
       status: "Pending",
-      lastLogin: "2024-01-06 09:15 AM",
-      lastActive: "2024-01-06 01:30 PM"
+      startDateTime: "2024-01-29 09:00 AM",
+      endDateTime: "2024-01-29 11:59 PM",
+      repeatFrequency: "Mon"
     },
     {
       id: 22,
       campaignName: "Weekend Special",
       fastChannel: "Speaking Tree",
       status: "Active",
-      lastLogin: "2024-01-09 03:20 PM",
-      lastActive: "2024-01-09 07:45 PM"
+      startDateTime: "2024-01-27 08:00 AM",
+      endDateTime: "2024-01-28 10:00 PM",
+      repeatFrequency: "Sat, Sun"
     },
     {
       id: 23,
       campaignName: "Midweek Madness",
       fastChannel: "TOI Global",
       status: "Inactive",
-      lastLogin: "2024-01-05 11:45 AM",
-      lastActive: "2024-01-05 03:20 PM"
+      startDateTime: "2024-01-24 12:00 PM",
+      endDateTime: "2024-01-25 06:00 PM",
+      repeatFrequency: "Wed, Thu"
     },
     {
       id: 24,
       campaignName: "Final Day Sale",
       fastChannel: "NBT Entertainment",
       status: "Active",
-      lastLogin: "2024-01-08 04:30 PM",
-      lastActive: "2024-01-08 08:15 PM"
+      startDateTime: "2024-01-31 08:00 AM",
+      endDateTime: "2024-01-31 11:59 PM",
+      repeatFrequency: "Wed"
     },
     {
       id: 25,
       campaignName: "Grand Opening",
       fastChannel: "ET Fast",
       status: "Pending",
-      lastLogin: "2024-01-04 07:20 AM",
-      lastActive: "2024-01-04 11:45 AM"
+      startDateTime: "2024-02-15 10:00 AM",
+      endDateTime: "2024-02-17 08:00 PM",
+      repeatFrequency: "Thu, Fri, Sat"
     }
   ];
 
@@ -391,14 +416,12 @@ const Settings = () => {
                         <TableHeader>
                           <TableRow className="border-b border-gray-200 bg-gray-50/50">
                             <TableHead className="text-left font-medium text-gray-900 py-4">#</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4">
-                              <span className="block sm:hidden">Campaign</span>
-                              <span className="hidden sm:block">Campaign Name</span>
-                            </TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4">Campaign Name</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden sm:table-cell">Fast Channel</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Status</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Last Login</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Last Active</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date and Time</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date and Time</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Repeat Frequency (Day wise)</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Action</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -428,8 +451,13 @@ const Settings = () => {
                                   {item.status}
                                 </span>
                               </TableCell>
-                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{item.lastLogin}</TableCell>
-                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{item.lastActive}</TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{item.startDateTime}</TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{item.endDateTime}</TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
+                                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
+                                  {item.repeatFrequency}
+                                </span>
+                              </TableCell>
                               <TableCell className="text-left py-4">
                                 <div className="flex items-center gap-2">
                                   <Tooltip>
