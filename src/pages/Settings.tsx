@@ -465,8 +465,8 @@ const Settings = () => {
                                         <Button
                                           variant="ghost"
                                           size="sm"
-                                          className="h-8 w-8 p-0 text-gray-400 cursor-not-allowed"
-                                          disabled
+                                          className="h-8 w-8 p-0 hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                          onClick={() => navigate(`/edit-campaign/${item.id}`)}
                                         >
                                          <Edit className="h-4 w-4" />
                                        </Button>
