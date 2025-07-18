@@ -36,7 +36,7 @@ const Index = () => {
   const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
   const [formData, setFormData] = useState({
     campaignName: "",
-    adType: "",
+    adType: "Video Ad",
     file: null as File | null,
     startDate: undefined as Date | undefined,
     endDate: undefined as Date | undefined,
@@ -399,7 +399,7 @@ const Index = () => {
               </div>
 
               {/* Day Selection and Loop Campaign */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="flex justify-between items-start">
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
                     <Label className="text-sm font-medium text-gray-700">Repeat Frequency</Label>
@@ -431,8 +431,8 @@ const Index = () => {
                   )}
                 </div>
 
-                {/* Loop Campaign */}
-                <div className="space-y-4">
+                {/* Loop Campaign - Aligned to extreme right */}
+                <div className="space-y-4 ml-auto">
                   <div className="flex items-center space-x-3">
                     <Checkbox
                       id="loopCampaign"
