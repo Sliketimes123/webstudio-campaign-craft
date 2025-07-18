@@ -47,7 +47,7 @@ const Index = () => {
   });
 
   const existingCampaigns = ["Default", "Campaign 1", "Campaign 2", "Campaign 3"];
-  const adTypes = ["Image", "L-band Ad", "Overlay Ad", "U-band Ad", "Video File"];
+  const adTypes = ["Image", "L-band Ad", "U-band Ad", "Video Ad"];
   const channels = ["ET Fast", "Speaking Tree", "TOI Global", "NBT Entertainment"];
   const days = [
     { key: "S", label: "Sun" },
@@ -230,7 +230,24 @@ const Index = () => {
                   <p className="text-sm text-gray-600 mb-2">
                     Drag & drop or browse
                   </p>
-                  <Button type="button" variant="outline" size="sm" className="h-8 text-sm border-gray-300 hover:bg-gray-50">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 text-sm border-gray-300 hover:bg-gray-50"
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*,video/*';
+                      input.onchange = (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (file) {
+                          setFormData(prev => ({ ...prev, file }));
+                        }
+                      };
+                      input.click();
+                    }}
+                  >
                     Browse
                   </Button>
                   {formData.file && (
@@ -242,6 +259,34 @@ const Index = () => {
               </div>
             </div>
           </div>
+
+          {/* Ad Preview Section */}
+          {formData.file && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Ad Preview</h3>
+              <div className="flex justify-center">
+                <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  {formData.file.type.startsWith('image/') ? (
+                    <img 
+                      src={URL.createObjectURL(formData.file)} 
+                      alt="Ad preview" 
+                      className="max-w-sm max-h-64 object-contain rounded"
+                    />
+                  ) : formData.file.type.startsWith('video/') ? (
+                    <video 
+                      src={URL.createObjectURL(formData.file)} 
+                      controls 
+                      className="max-w-sm max-h-64 rounded"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center w-64 h-32 bg-gray-200 rounded">
+                      <p className="text-gray-500">Preview not available</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Select Fast Channel */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -353,69 +398,71 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Day Selection */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Label className="text-sm font-medium text-gray-700">Repeat Frequency</Label>
-                  <Switch
-                    checked={repeatFrequencyEnabled}
-                    onCheckedChange={setRepeatFrequencyEnabled}
-                  />
-                </div>
-                {repeatFrequencyEnabled && (
-                  <div className="flex gap-2">
-                    {days.map((day) => (
-                      <Button
-                        key={day.key}
-                        type="button"
-                        variant={selectedDays.includes(day.key) ? "default" : "outline"}
-                        size="sm"
-                        className={cn(
-                          "w-10 h-10 rounded-full p-0 text-sm",
-                          selectedDays.includes(day.key)
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                        )}
-                        onClick={() => toggleDay(day.key)}
-                      >
-                        {day.key}
-                      </Button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Loop Campaign */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="loopCampaign"
-                    checked={formData.loopCampaign}
-                    onCheckedChange={(checked) => 
-                      setFormData(prev => ({ ...prev, loopCampaign: !!checked }))
-                    }
-                    className="border-gray-300"
-                  />
-                  <Label htmlFor="loopCampaign" className="text-sm text-gray-700">Run Campaign in Loop</Label>
-                </div>
-                
-                {formData.loopCampaign && (
-                  <div className="space-y-2">
-                    <Label htmlFor="loopFrequency" className="text-sm font-medium text-gray-700">Loop Frequency (0-100)</Label>
-                    <Input
-                      id="loopFrequency"
-                      type="number"
-                      min="0"
-                      max="100"
-                      className="w-24 text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      value={formData.loopFrequency}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        loopFrequency: Number(e.target.value) 
-                      }))}
+              {/* Day Selection and Loop Campaign */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Label className="text-sm font-medium text-gray-700">Repeat Frequency</Label>
+                    <Switch
+                      checked={repeatFrequencyEnabled}
+                      onCheckedChange={setRepeatFrequencyEnabled}
                     />
                   </div>
-                )}
+                  {repeatFrequencyEnabled && (
+                    <div className="flex gap-2">
+                      {days.map((day) => (
+                        <Button
+                          key={day.key}
+                          type="button"
+                          variant={selectedDays.includes(day.key) ? "default" : "outline"}
+                          size="sm"
+                          className={cn(
+                            "w-10 h-10 rounded-full p-0 text-sm",
+                            selectedDays.includes(day.key)
+                              ? "bg-blue-600 text-white hover:bg-blue-700"
+                              : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                          )}
+                          onClick={() => toggleDay(day.key)}
+                        >
+                          {day.key}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Loop Campaign */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id="loopCampaign"
+                      checked={formData.loopCampaign}
+                      onCheckedChange={(checked) => 
+                        setFormData(prev => ({ ...prev, loopCampaign: !!checked }))
+                      }
+                      className="border-gray-300"
+                    />
+                    <Label htmlFor="loopCampaign" className="text-sm text-gray-700">Run Campaign in Loop</Label>
+                  </div>
+                  
+                  {formData.loopCampaign && (
+                    <div className="space-y-2">
+                      <Label htmlFor="loopFrequency" className="text-sm font-medium text-gray-700">Loop Frequency (0-100)</Label>
+                      <Input
+                        id="loopFrequency"
+                        type="number"
+                        min="0"
+                        max="100"
+                        className="w-24 text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        value={formData.loopFrequency}
+                        onChange={(e) => setFormData(prev => ({ 
+                          ...prev, 
+                          loopFrequency: Number(e.target.value) 
+                        }))}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
