@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import MediaBrowser from "@/components/MediaBrowser";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Index = () => {
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
+  const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
   const [formData, setFormData] = useState({
     campaignName: "",
     adType: "Video Ad",
@@ -235,18 +237,7 @@ const Index = () => {
                     variant="outline" 
                     size="sm" 
                     className="h-8 text-sm border-gray-300 hover:bg-gray-50"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*,video/*';
-                      input.onchange = (e) => {
-                        const file = (e.target as HTMLInputElement).files?.[0];
-                        if (file) {
-                          setFormData(prev => ({ ...prev, file }));
-                        }
-                      };
-                      input.click();
-                    }}
+                    onClick={() => setMediaBrowserOpen(true)}
                   >
                     Browse
                   </Button>
@@ -299,6 +290,13 @@ const Index = () => {
           </div>
         </form>
       </div>
+      
+      <MediaBrowser 
+        open={mediaBrowserOpen}
+        onOpenChange={setMediaBrowserOpen}
+        onFileSelect={(file) => setFormData(prev => ({ ...prev, file }))}
+      />
+      
       <Toaster />
     </div>
   );
