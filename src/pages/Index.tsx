@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Upload, X, CheckCircle } from "lucide-react";
+import { CalendarIcon, Upload, X, CheckCircle, Edit, Eye, MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { Progress } from "@/components/ui/progress";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import MediaBrowser from "@/components/MediaBrowser";
 
 const Index = () => {
@@ -38,6 +40,7 @@ const Index = () => {
   const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
   const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<any[]>([]);
+  const [videoList, setVideoList] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     campaignName: "",
     adType: "Video Ad",
@@ -63,10 +66,12 @@ const Index = () => {
     { key: "S", label: "Sat" },
   ];
 
-  // Load upload queue from localStorage on component mount
+  // Load upload queue and video list from localStorage on component mount
   useEffect(() => {
     const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+    const savedVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
     setUploadQueue(savedQueue);
+    setVideoList(savedVideoList);
     
     // Simulate upload progress for items in queue
     savedQueue.forEach((item: any, index: number) => {
@@ -90,20 +95,41 @@ const Index = () => {
       if (progress >= 100) {
         clearInterval(interval);
         setTimeout(() => {
-          setUploadQueue(prev => prev.map(item => 
-            item.id === uploadId 
-              ? { ...item, status: 'completed', progress: 100 }
-              : item
-          ));
-          
-          // Update localStorage
-          const updatedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
-          const updated = updatedQueue.map((item: any) => 
-            item.id === uploadId 
-              ? { ...item, status: 'completed', progress: 100 }
-              : item
-          );
-          localStorage.setItem('uploadQueue', JSON.stringify(updated));
+          setUploadQueue(prev => {
+            const updatedQueue = prev.map(item => 
+              item.id === uploadId 
+                ? { ...item, status: 'completed', progress: 100 }
+                : item
+            );
+            
+            // Add completed video to video list
+            const completedVideo = updatedQueue.find(item => item.id === uploadId);
+            if (completedVideo) {
+              const newVideo = {
+                id: completedVideo.id,
+                name: completedVideo.title,
+                source: completedVideo.source || 'Upload',
+                duration: completedVideo.duration || '00:30',
+                uploadedAt: new Date().toISOString(),
+              };
+              
+              setVideoList(prevList => {
+                const updatedList = [...prevList, newVideo];
+                localStorage.setItem('videoList', JSON.stringify(updatedList));
+                return updatedList;
+              });
+              
+              // Hide upload progress after 2 seconds
+              setTimeout(() => {
+                setUploadQueue(prev => prev.filter(item => item.id !== uploadId));
+                const currentQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+                const filteredQueue = currentQueue.filter((item: any) => item.id !== uploadId);
+                localStorage.setItem('uploadQueue', JSON.stringify(filteredQueue));
+              }, 2000);
+            }
+            
+            return updatedQueue;
+          });
         }, 500);
       }
     }, 800);
@@ -322,6 +348,55 @@ const Index = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Video List Section */}
+          {videoList.length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Video Library</h3>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">#</TableHead>
+                      <TableHead>Video Name</TableHead>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Duration</TableHead>
+                      <TableHead className="w-20">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {videoList.map((video, index) => (
+                      <TableRow key={video.id}>
+                        <TableCell className="font-medium">{index + 1}</TableCell>
+                        <TableCell className="font-medium">{video.name}</TableCell>
+                        <TableCell>{video.source}</TableCell>
+                        <TableCell>{video.duration}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </div>
           )}
