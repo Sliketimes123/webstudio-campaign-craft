@@ -245,61 +245,40 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Ad Type Selection */}
+          {/* Upload Media File */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label htmlFor="adType" className="text-sm font-medium text-gray-700">Select Ad Type</Label>
-                <Select 
-                  value={formData.adType} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, adType: value }))}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-gray-700">Upload Media File</Label>
+              <div
+                className={cn(
+                  "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
+                  dragActive
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
+                )}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600 mb-2">
+                  Add a video file
+                </p>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 text-sm border-gray-300 hover:bg-gray-50"
+                  onClick={() => setMediaBrowserOpen(true)}
                 >
-                  <SelectTrigger className="h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <SelectValue placeholder="Choose ad type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                    {adTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* File Upload */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Upload Media File</Label>
-                <div
-                  className={cn(
-                    "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
-                    dragActive
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
-                  )}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">
-                    Drag & drop or browse
+                  Add
+                </Button>
+                {formData.file && (
+                  <p className="text-sm text-blue-600 mt-2">
+                    {formData.file.name}
                   </p>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    className="h-8 text-sm border-gray-300 hover:bg-gray-50"
-                    onClick={() => setMediaBrowserOpen(true)}
-                  >
-                    Browse
-                  </Button>
-                  {formData.file && (
-                    <p className="text-sm text-blue-600 mt-2">
-                      {formData.file.name}
-                    </p>
-                  )}
+                )}
               </div>
             </div>
           </div>
@@ -346,7 +325,6 @@ const Index = () => {
               </div>
             </div>
           )}
-          </div>
 
           {/* Ad Preview Section */}
           {formData.file && (
