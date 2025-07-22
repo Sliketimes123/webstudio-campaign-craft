@@ -42,25 +42,6 @@ const Settings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
-  // Helper function to calculate total duration
-  const calculateTotalDuration = (startDateTime: string, endDateTime: string) => {
-    try {
-      const start = parse(startDateTime, "yyyy-MM-dd hh:mm a", new Date());
-      const end = parse(endDateTime, "yyyy-MM-dd hh:mm a", new Date());
-      const diffInMs = end.getTime() - start.getTime();
-      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-      const diffInHours = Math.floor((diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      
-      if (diffInDays > 0) {
-        return `${diffInDays}d ${diffInHours}h`;
-      } else {
-        return `${diffInHours}h`;
-      }
-    } catch (error) {
-      return "N/A";
-    }
-  };
-
   // Sample data for the table
   const memberData = [
     {
@@ -70,8 +51,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-15 09:00 AM",
       endDateTime: "2024-02-15 06:00 PM",
-      repeatFrequency: "Mon, Wed, Fri",
-      totalDuration: calculateTotalDuration("2024-01-15 09:00 AM", "2024-02-15 06:00 PM")
+      repeatFrequency: "Mon, Wed, Fri"
     },
     {
       id: 2,
@@ -80,8 +60,7 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-01-14 08:00 AM",
       endDateTime: "2024-01-31 11:59 PM",
-      repeatFrequency: "Daily",
-      totalDuration: calculateTotalDuration("2024-01-14 08:00 AM", "2024-01-31 11:59 PM")
+      repeatFrequency: "Daily"
     },
     {
       id: 3,
@@ -90,8 +69,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-01 12:00 AM",
       endDateTime: "2024-01-07 11:59 PM",
-      repeatFrequency: "Weekends",
-      totalDuration: calculateTotalDuration("2024-01-01 12:00 AM", "2024-01-07 11:59 PM")
+      repeatFrequency: "Weekends"
     },
     {
       id: 4,
@@ -100,8 +78,7 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-02-01 06:00 AM",
       endDateTime: "2024-02-07 10:00 PM",
-      repeatFrequency: "Tue, Thu, Sat",
-      totalDuration: calculateTotalDuration("2024-02-01 06:00 AM", "2024-02-07 10:00 PM")
+      repeatFrequency: "Tue, Thu, Sat"
     },
     {
       id: 5,
@@ -110,8 +87,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-20 10:00 AM",
       endDateTime: "2024-01-22 05:00 PM",
-      repeatFrequency: "Mon, Tue, Wed",
-      totalDuration: calculateTotalDuration("2024-01-20 10:00 AM", "2024-01-22 05:00 PM")
+      repeatFrequency: "Mon, Tue, Wed"
     },
     {
       id: 6,
@@ -120,8 +96,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-08-15 07:00 AM",
       endDateTime: "2024-09-15 08:00 PM",
-      repeatFrequency: "Weekdays",
-      totalDuration: calculateTotalDuration("2024-08-15 07:00 AM", "2024-09-15 08:00 PM")
+      repeatFrequency: "Weekdays"
     },
     {
       id: 7,
@@ -130,8 +105,7 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-11-24 12:00 AM",
       endDateTime: "2024-11-26 11:59 PM",
-      repeatFrequency: "Fri, Sat, Sun",
-      totalDuration: calculateTotalDuration("2024-11-24 12:00 AM", "2024-11-26 11:59 PM")
+      repeatFrequency: "Fri, Sat, Sun"
     },
     {
       id: 8,
@@ -140,8 +114,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-12-01 08:00 AM",
       endDateTime: "2024-02-28 09:00 PM",
-      repeatFrequency: "Daily",
-      totalDuration: calculateTotalDuration("2024-12-01 08:00 AM", "2024-02-28 09:00 PM")
+      repeatFrequency: "Daily"
     },
     {
       id: 9,
@@ -150,8 +123,7 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-02-10 09:00 AM",
       endDateTime: "2024-02-14 11:59 PM",
-      repeatFrequency: "Mon, Wed, Fri",
-      totalDuration: calculateTotalDuration("2024-02-10 09:00 AM", "2024-02-14 11:59 PM")
+      repeatFrequency: "Mon, Wed, Fri"
     },
     {
       id: 10,
@@ -160,8 +132,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-03-25 08:00 AM",
       endDateTime: "2024-04-01 10:00 PM",
-      repeatFrequency: "Weekends",
-      totalDuration: calculateTotalDuration("2024-03-25 08:00 AM", "2024-04-01 10:00 PM")
+      repeatFrequency: "Weekends"
     },
     {
       id: 11,
@@ -170,8 +141,7 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-05-08 09:00 AM",
       endDateTime: "2024-05-12 08:00 PM",
-      repeatFrequency: "Thu, Fri, Sat, Sun",
-      totalDuration: calculateTotalDuration("2024-05-08 09:00 AM", "2024-05-12 08:00 PM")
+      repeatFrequency: "Thu, Fri, Sat, Sun"
     },
     {
       id: 12,
@@ -180,8 +150,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-06-15 10:00 AM",
       endDateTime: "2024-06-16 11:00 PM",
-      repeatFrequency: "Sat, Sun",
-      totalDuration: calculateTotalDuration("2024-06-15 10:00 AM", "2024-06-16 11:00 PM")
+      repeatFrequency: "Sat, Sun"
     },
     {
       id: 13,
@@ -190,8 +159,7 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-07-04 07:00 AM",
       endDateTime: "2024-07-04 11:59 PM",
-      repeatFrequency: "Thu",
-      totalDuration: calculateTotalDuration("2024-07-04 07:00 AM", "2024-07-04 11:59 PM")
+      repeatFrequency: "Thu"
     },
     {
       id: 14,
@@ -200,8 +168,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-09-01 08:00 AM",
       endDateTime: "2024-09-03 10:00 PM",
-      repeatFrequency: "Fri, Sat, Sun, Mon",
-      totalDuration: calculateTotalDuration("2024-09-01 08:00 AM", "2024-09-03 10:00 PM")
+      repeatFrequency: "Fri, Sat, Sun, Mon"
     },
     {
       id: 15,
@@ -210,8 +177,7 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-10-28 06:00 PM",
       endDateTime: "2024-10-31 11:59 PM",
-      repeatFrequency: "Mon, Tue, Wed, Thu",
-      totalDuration: calculateTotalDuration("2024-10-28 06:00 PM", "2024-10-31 11:59 PM")
+      repeatFrequency: "Mon, Tue, Wed, Thu"
     },
     {
       id: 16,
@@ -220,8 +186,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-11-25 09:00 AM",
       endDateTime: "2024-11-28 11:59 PM",
-      repeatFrequency: "Mon, Tue, Wed, Thu",
-      totalDuration: calculateTotalDuration("2024-11-25 09:00 AM", "2024-11-28 11:59 PM")
+      repeatFrequency: "Mon, Tue, Wed, Thu"
     },
     {
       id: 17,
@@ -230,8 +195,7 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-12-20 08:00 AM",
       endDateTime: "2024-12-25 11:59 PM",
-      repeatFrequency: "Daily",
-      totalDuration: calculateTotalDuration("2024-12-20 08:00 AM", "2024-12-25 11:59 PM")
+      repeatFrequency: "Daily"
     },
     {
       id: 18,
@@ -240,8 +204,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-12-31 10:00 PM",
       endDateTime: "2025-01-01 02:00 AM",
-      repeatFrequency: "Tue, Wed",
-      totalDuration: calculateTotalDuration("2024-12-31 10:00 PM", "2025-01-01 02:00 AM")
+      repeatFrequency: "Tue, Wed"
     },
     {
       id: 19,
@@ -250,8 +213,7 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-03-01 09:00 AM",
       endDateTime: "2024-05-31 08:00 PM",
-      repeatFrequency: "Weekdays",
-      totalDuration: calculateTotalDuration("2024-03-01 09:00 AM", "2024-05-31 08:00 PM")
+      repeatFrequency: "Weekdays"
     },
     {
       id: 20,
@@ -260,8 +222,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-07-01 10:00 AM",
       endDateTime: "2024-08-31 09:00 PM",
-      repeatFrequency: "Weekends",
-      totalDuration: calculateTotalDuration("2024-07-01 10:00 AM", "2024-08-31 09:00 PM")
+      repeatFrequency: "Weekends"
     },
     {
       id: 21,
@@ -270,8 +231,7 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-01-29 09:00 AM",
       endDateTime: "2024-01-29 11:59 PM",
-      repeatFrequency: "Mon",
-      totalDuration: calculateTotalDuration("2024-01-29 09:00 AM", "2024-01-29 11:59 PM")
+      repeatFrequency: "Mon"
     },
     {
       id: 22,
@@ -280,8 +240,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-27 08:00 AM",
       endDateTime: "2024-01-28 10:00 PM",
-      repeatFrequency: "Sat, Sun",
-      totalDuration: calculateTotalDuration("2024-01-27 08:00 AM", "2024-01-28 10:00 PM")
+      repeatFrequency: "Sat, Sun"
     },
     {
       id: 23,
@@ -290,8 +249,7 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-01-24 12:00 PM",
       endDateTime: "2024-01-25 06:00 PM",
-      repeatFrequency: "Wed, Thu",
-      totalDuration: calculateTotalDuration("2024-01-24 12:00 PM", "2024-01-25 06:00 PM")
+      repeatFrequency: "Wed, Thu"
     },
     {
       id: 24,
@@ -300,8 +258,7 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-31 08:00 AM",
       endDateTime: "2024-01-31 11:59 PM",
-      repeatFrequency: "Wed",
-      totalDuration: calculateTotalDuration("2024-01-31 08:00 AM", "2024-01-31 11:59 PM")
+      repeatFrequency: "Wed"
     },
     {
       id: 25,
@@ -310,8 +267,7 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-02-15 10:00 AM",
       endDateTime: "2024-02-17 08:00 PM",
-      repeatFrequency: "Thu, Fri, Sat",
-      totalDuration: calculateTotalDuration("2024-02-15 10:00 AM", "2024-02-17 08:00 PM")
+      repeatFrequency: "Thu, Fri, Sat"
     }
   ];
 
@@ -479,7 +435,6 @@ const Settings = () => {
                             <TableHead className="text-left font-medium text-gray-900 py-4">Status</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date and Time</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date and Time</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Total Duration</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Repeat Frequency (Day wise)</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Action</TableHead>
                           </TableRow>
@@ -512,11 +467,6 @@ const Settings = () => {
                               </TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.startDateTime)}</TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.endDateTime)}</TableCell>
-                              <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
-                                <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-md text-xs font-medium">
-                                  {item.totalDuration}
-                                </span>
-                              </TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
                                 <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
                                   {item.repeatFrequency}
