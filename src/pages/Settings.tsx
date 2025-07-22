@@ -309,6 +309,29 @@ const Settings = () => {
     }
   };
 
+  // Calculate total duration between start and end dates
+  const calculateTotalDuration = (startDateTime: string, endDateTime: string) => {
+    try {
+      const startDate = parse(startDateTime, "yyyy-MM-dd hh:mm a", new Date());
+      const endDate = parse(endDateTime, "yyyy-MM-dd hh:mm a", new Date());
+      
+      const diffInMs = endDate.getTime() - startDate.getTime();
+      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+      const diffInHours = Math.floor((diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const diffInMinutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (diffInDays > 0) {
+        return `${diffInDays}d ${diffInHours}h ${diffInMinutes}m`;
+      } else if (diffInHours > 0) {
+        return `${diffInHours}h ${diffInMinutes}m`;
+      } else {
+        return `${diffInMinutes}m`;
+      }
+    } catch (error) {
+      return "N/A";
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50 font-['Roboto',sans-serif]">
@@ -436,6 +459,7 @@ const Settings = () => {
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date and Time</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date and Time</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Repeat Frequency (Day wise)</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden xl:table-cell">Total Duration</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Action</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -470,6 +494,11 @@ const Settings = () => {
                               <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
                                 <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
                                   {item.repeatFrequency}
+                                </span>
+                              </TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden xl:table-cell">
+                                <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-md text-xs font-medium">
+                                  {calculateTotalDuration(item.startDateTime, item.endDateTime)}
                                 </span>
                               </TableCell>
                               <TableCell className="text-left py-4">
