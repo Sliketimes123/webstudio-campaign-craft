@@ -230,49 +230,6 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8 max-w-4xl">
-        {/* Upload Progress Section */}
-        {uploadQueue.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Upload Progress</h2>
-            <div className="space-y-4">
-              {uploadQueue.map((upload) => (
-                <div key={upload.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-900">{upload.title}</span>
-                      <div className="flex items-center gap-2">
-                        {upload.status === 'completed' ? (
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <span className="text-sm text-gray-500">{Math.round(upload.progress)}%</span>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFromQueue(upload.id)}
-                          className="h-6 w-6 p-0 hover:bg-gray-200"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                    <Progress 
-                      value={upload.progress} 
-                      className="h-2"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>
-                        {upload.status === 'completed' ? 'Upload completed' : 'Uploading...'}
-                      </span>
-                      <span>{new Date(upload.timestamp).toLocaleTimeString()}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         <form onSubmit={onSubmit} className="space-y-8">
           {/* Campaign Details */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -343,9 +300,52 @@ const Index = () => {
                       {formData.file.name}
                     </p>
                   )}
-                </div>
               </div>
             </div>
+          </div>
+
+          {/* Upload Progress Section */}
+          {uploadQueue.length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Upload Progress</h3>
+              <div className="space-y-2">
+                {uploadQueue.map((upload) => (
+                  <div key={upload.id} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium text-gray-900 truncate">{upload.title}</span>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {upload.status === 'completed' ? (
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                          ) : (
+                            <span className="text-xs text-gray-500">{Math.round(upload.progress)}%</span>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFromQueue(upload.id)}
+                            className="h-4 w-4 p-0 hover:bg-gray-200"
+                          >
+                            <X className="h-2 w-2" />
+                          </Button>
+                        </div>
+                      </div>
+                      <Progress 
+                        value={upload.progress} 
+                        className="h-1"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>
+                          {upload.status === 'completed' ? 'Completed' : 'Uploading...'}
+                        </span>
+                        <span>{new Date(upload.timestamp).toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           </div>
 
           {/* Ad Preview Section */}
