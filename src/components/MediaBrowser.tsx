@@ -28,14 +28,12 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
       title: "SilkeVod",
       subtitle: "Uploaded: 186 days ago",
       duration: "05:02",
-      thumbnail: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=200&h=200&fit=crop&crop=center",
     },
     {
       id: 2,
       title: "Matrix Scene",
       subtitle: "Uploaded: 92 days ago", 
       duration: "03:45",
-      thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&h=200&fit=crop&crop=center",
     },
   ];
 
@@ -59,61 +57,69 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl h-[80vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-6xl h-[80vh] p-0 overflow-hidden bg-white border-2 border-gray-300">
         <DialogHeader className="sr-only">
           <DialogTitle>Media Browser</DialogTitle>
         </DialogHeader>
         
         <div className="flex h-full">
           {/* Sidebar */}
-          <div className="w-48 bg-gray-50 border-r border-gray-200 p-4">
-            <nav className="space-y-2">
-              {navigationItems.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelectedTab(item.id)}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors",
-                      selectedTab === item.id
-                        ? "bg-primary text-primary-foreground"
-                        : "text-gray-700 hover:bg-gray-200"
-                    )}
-                  >
-                    <IconComponent className="h-4 w-4" />
-                    {item.label}
-                  </button>
-                );
-              })}
-            </nav>
+          <div className="w-56 bg-gray-100 border-r-2 border-gray-300">
+            <div className="p-4">
+              <nav className="space-y-1">
+                {navigationItems.map((item) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelectedTab(item.id)}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium border transition-colors",
+                        selectedTab === item.id
+                          ? "bg-gray-900 text-white border-gray-900"
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                      )}
+                    >
+                      <IconComponent className="h-4 w-4 stroke-2" strokeWidth={2} />
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col bg-white">
             {/* Top Bar */}
-            <div className="border-b border-gray-200 p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="flex-1 max-w-md">
-                    <Input
-                      placeholder="Enter URL"
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      className="h-9"
-                    />
-                  </div>
+            <div className="border-b-2 border-gray-300 p-4">
+              <div className="flex items-center justify-between gap-6">
+                <div className="flex-1 max-w-md">
+                  <Input
+                    placeholder="Enter URL"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    className="h-10 border-2 border-gray-300 bg-white font-medium text-sm"
+                  />
                 </div>
                 
                 <div className="flex items-center gap-4">
-                  <Button size="sm" variant="outline" className="h-9 w-9 p-0">
-                    <Play className="h-4 w-4" />
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="h-10 w-10 p-0 border-2 border-gray-300 bg-white hover:bg-gray-50"
+                  >
+                    <Play className="h-4 w-4 stroke-2" strokeWidth={2} />
                   </Button>
                   
-                  <span className="text-sm text-gray-500 mx-2">– OR –</span>
+                  <span className="text-sm font-medium text-gray-600 mx-2">– OR –</span>
                   
-                  <Button size="sm" onClick={handleFileUpload} className="h-9">
-                    <Upload className="h-4 w-4 mr-2" />
+                  <Button 
+                    size="sm" 
+                    onClick={handleFileUpload} 
+                    className="h-10 bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 font-medium"
+                  >
+                    <Upload className="h-4 w-4 mr-2 stroke-2" strokeWidth={2} />
                     Upload
                   </Button>
                 </div>
@@ -121,36 +127,40 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             </div>
 
             {/* Search Bar */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b-2 border-gray-300 bg-gray-50">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 stroke-2" strokeWidth={2} />
                 <Input
                   placeholder="Search By Title"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-9"
+                  className="pl-10 h-10 border-2 border-gray-300 bg-white font-medium text-sm"
                 />
               </div>
             </div>
 
             {/* Video Cards */}
-            <div className="flex-1 p-6">
+            <div className="flex-1 p-6 bg-gray-50">
               <div className="grid grid-cols-2 gap-6">
                 {videoCards.map((video) => (
-                  <div key={video.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="relative">
-                      <img 
-                        src={video.thumbnail} 
-                        alt={video.title}
-                        className="w-full h-32 object-cover"
-                      />
-                      <div className="absolute bottom-2 right-2 bg-black/75 text-white text-xs px-2 py-1 rounded">
+                  <div 
+                    key={video.id} 
+                    className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
+                  >
+                    {/* Thumbnail placeholder */}
+                    <div className="relative h-32 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
+                      <div className="w-16 h-16 border-2 border-gray-400 bg-white flex items-center justify-center">
+                        <Play className="h-6 w-6 text-gray-600 stroke-2" strokeWidth={2} />
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-gray-900 text-white text-xs px-2 py-1 font-medium border border-gray-900">
                         {video.duration}
                       </div>
                     </div>
-                    <div className="p-3">
-                      <h3 className="font-medium text-gray-900 mb-1">{video.title}</h3>
-                      <p className="text-sm text-gray-500">{video.subtitle}</p>
+                    
+                    {/* Card content */}
+                    <div className="p-4">
+                      <h3 className="font-medium text-gray-900 mb-2 text-sm">{video.title}</h3>
+                      <p className="text-xs text-gray-600 font-medium">{video.subtitle}</p>
                     </div>
                   </div>
                 ))}
@@ -158,11 +168,18 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             </div>
 
             {/* Bottom Buttons */}
-            <div className="border-t border-gray-200 p-4 flex justify-between">
-              <Button variant="outline" onClick={handleBack}>
+            <div className="border-t-2 border-gray-300 p-4 bg-white flex justify-between">
+              <Button 
+                variant="outline" 
+                onClick={handleBack}
+                className="px-6 py-2 h-10 border-2 border-gray-300 bg-white text-gray-900 font-medium hover:bg-gray-50"
+              >
                 BACK
               </Button>
-              <Button disabled className="opacity-50 cursor-not-allowed">
+              <Button 
+                disabled 
+                className="px-6 py-2 h-10 bg-gray-300 text-gray-500 border-2 border-gray-300 cursor-not-allowed font-medium"
+              >
                 Next
               </Button>
             </div>
