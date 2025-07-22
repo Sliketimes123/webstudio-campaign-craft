@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Upload } from "lucide-react";
+import { CalendarIcon, Upload, X, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { Progress } from "@/components/ui/progress";
 import MediaBrowser from "@/components/MediaBrowser";
 
 const Index = () => {
@@ -36,6 +37,7 @@ const Index = () => {
   const [dragActive, setDragActive] = useState(false);
   const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
   const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
+  const [uploadQueue, setUploadQueue] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     campaignName: "",
     adType: "Video Ad",
@@ -60,6 +62,58 @@ const Index = () => {
     { key: "F", label: "Fri" },
     { key: "S", label: "Sat" },
   ];
+
+  // Load upload queue from localStorage on component mount
+  useEffect(() => {
+    const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+    setUploadQueue(savedQueue);
+    
+    // Simulate upload progress for items in queue
+    savedQueue.forEach((item: any, index: number) => {
+      if (item.status === 'uploading') {
+        simulateUploadProgress(item.id, index);
+      }
+    });
+  }, []);
+
+  const simulateUploadProgress = (uploadId: number, index: number) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15 + 5; // Random progress between 5-20%
+      
+      setUploadQueue(prev => prev.map(item => 
+        item.id === uploadId 
+          ? { ...item, progress: Math.min(progress, 100) }
+          : item
+      ));
+      
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setUploadQueue(prev => prev.map(item => 
+            item.id === uploadId 
+              ? { ...item, status: 'completed', progress: 100 }
+              : item
+          ));
+          
+          // Update localStorage
+          const updatedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+          const updated = updatedQueue.map((item: any) => 
+            item.id === uploadId 
+              ? { ...item, status: 'completed', progress: 100 }
+              : item
+          );
+          localStorage.setItem('uploadQueue', JSON.stringify(updated));
+        }, 500);
+      }
+    }, 800);
+  };
+
+  const removeFromQueue = (uploadId: number) => {
+    const updatedQueue = uploadQueue.filter(item => item.id !== uploadId);
+    setUploadQueue(updatedQueue);
+    localStorage.setItem('uploadQueue', JSON.stringify(updatedQueue));
+  };
 
   const validateForm = () => {
     if (!formData.campaignName.trim()) {
@@ -176,6 +230,49 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8 max-w-4xl">
+        {/* Upload Progress Section */}
+        {uploadQueue.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Upload Progress</h2>
+            <div className="space-y-4">
+              {uploadQueue.map((upload) => (
+                <div key={upload.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-900">{upload.title}</span>
+                      <div className="flex items-center gap-2">
+                        {upload.status === 'completed' ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <span className="text-sm text-gray-500">{Math.round(upload.progress)}%</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFromQueue(upload.id)}
+                          className="h-6 w-6 p-0 hover:bg-gray-200"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    <Progress 
+                      value={upload.progress} 
+                      className="h-2"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>
+                        {upload.status === 'completed' ? 'Upload completed' : 'Uploading...'}
+                      </span>
+                      <span>{new Date(upload.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <form onSubmit={onSubmit} className="space-y-8">
           {/* Campaign Details */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

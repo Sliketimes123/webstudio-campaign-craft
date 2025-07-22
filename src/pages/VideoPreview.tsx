@@ -113,7 +113,27 @@ const VideoPreview = () => {
 
             <div className="mt-6 pt-6 border-t">
               <div className="flex gap-4">
-                <Button className="flex-1">
+                <Button 
+                  className="flex-1"
+                  onClick={() => {
+                    // Add video to upload queue and redirect
+                    const videoData = location.state?.video;
+                    if (videoData) {
+                      // Store video data in localStorage to pass to campaign manager
+                      const uploadQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+                      const newUpload = {
+                        id: Date.now(),
+                        title: videoData.title,
+                        progress: 0,
+                        status: 'uploading',
+                        timestamp: new Date().toISOString()
+                      };
+                      uploadQueue.push(newUpload);
+                      localStorage.setItem('uploadQueue', JSON.stringify(uploadQueue));
+                    }
+                    navigate('/campaign-manager');
+                  }}
+                >
                   Use This Video
                 </Button>
                 <Button variant="outline">
