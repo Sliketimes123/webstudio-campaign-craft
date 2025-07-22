@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Play, Upload, Library, Triangle, UploadIcon, Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ interface MediaBrowserProps {
 }
 
 const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileSelect }) => {
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("Library");
   const [urlInput, setUrlInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -144,6 +146,10 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                     size="sm" 
                     variant="outline" 
                     className="h-10 w-10 p-0 border-2 border-gray-300 bg-white hover:bg-gray-50"
+                    onClick={() => {
+                      onOpenChange(false);
+                      navigate('/video-preview', { state: { video: { title: "URL Video", duration: "00:00" } } });
+                    }}
                   >
                     <Play className="h-4 w-4 stroke-2" strokeWidth={2} />
                   </Button>
@@ -152,7 +158,12 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                   
                   <Button 
                     size="sm" 
-                    onClick={handleFileUpload}
+                    onClick={() => {
+                      if (!isUploading) {
+                        onOpenChange(false);
+                        navigate('/video-preview', { state: { video: { title: "Uploaded Video", duration: "00:00" } } });
+                      }
+                    }}
                     disabled={isUploading}
                     className="h-10 bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 font-medium disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed"
                   >
@@ -213,7 +224,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log('Play video:', video.id);
+                                onOpenChange(false);
+                                navigate('/video-preview', { state: { video } });
                               }}
                             >
                               <Play className="h-4 w-4" />
@@ -223,8 +235,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log('Add video:', video.id);
                                 onOpenChange(false);
+                                navigate('/video-preview', { state: { video } });
                               }}
                             >
                               <Plus className="h-4 w-4" />
@@ -264,7 +276,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log('Play video:', video.id);
+                                onOpenChange(false);
+                                navigate('/video-preview', { state: { video } });
                               }}
                             >
                               <Play className="h-3 w-3" />
@@ -274,8 +287,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log('Add video:', video.id);
                                 onOpenChange(false);
+                                navigate('/video-preview', { state: { video } });
                               }}
                             >
                               <Plus className="h-3 w-3" />
