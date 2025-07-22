@@ -3,6 +3,7 @@ import { Play, Upload, Library, Triangle, UploadIcon, Search } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface MediaBrowserProps {
@@ -140,71 +141,73 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             </div>
 
             {/* Video Cards */}
-            <div className="p-6 bg-gray-50 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
-              {selectedTab === "Silke" ? (
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    {
-                      id: 1,
-                      title: "SilkeVod",
-                      subtitle: "Slike ID: 1xv3dgq9z9",
-                      duration: "05:02",
-                    },
-                    {
-                      id: 2,
-                      title: "Matrix Scene",
-                      subtitle: "Slike ID: 2bw8kx7p4m", 
-                      duration: "03:45",
-                    },
-                  ].map((video) => (
-                    <div 
-                      key={video.id} 
-                      className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
-                    >
-                      {/* Thumbnail placeholder */}
-                      <div className="relative h-24 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
-                        <div className="w-12 h-12 border-2 border-gray-400 bg-white flex items-center justify-center">
-                          <Play className="h-5 w-5 text-gray-600 stroke-2" strokeWidth={2} />
+            <div className="flex-1 p-6 bg-gray-50">
+              <ScrollArea className="h-full">
+                {selectedTab === "Silke" ? (
+                  <div className="grid grid-cols-2 gap-4 pr-4">
+                    {[
+                      {
+                        id: 1,
+                        title: "SilkeVod",
+                        subtitle: "Slike ID: 1xv3dgq9z9",
+                        duration: "05:02",
+                      },
+                      {
+                        id: 2,
+                        title: "Matrix Scene",
+                        subtitle: "Slike ID: 2bw8kx7p4m", 
+                        duration: "03:45",
+                      },
+                    ].map((video) => (
+                      <div 
+                        key={video.id} 
+                        className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
+                      >
+                        {/* Thumbnail placeholder */}
+                        <div className="relative h-24 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
+                          <div className="w-12 h-12 border-2 border-gray-400 bg-white flex items-center justify-center">
+                            <Play className="h-5 w-5 text-gray-600 stroke-2" strokeWidth={2} />
+                          </div>
+                          <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
+                            {video.duration}
+                          </div>
                         </div>
-                        <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
-                          {video.duration}
-                        </div>
-                      </div>
-                      
-                      {/* Card content */}
-                      <div className="p-3">
-                        <h3 className="font-medium text-gray-900 mb-1 text-xs truncate">{video.title}</h3>
-                        <p className="text-xs text-gray-600 font-medium truncate">{video.subtitle}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-3 gap-4">
-                  {videoCards.map((video) => (
-                    <div 
-                      key={video.id} 
-                      className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
-                    >
-                      {/* Thumbnail placeholder */}
-                      <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
-                        <div className="w-10 h-10 border-2 border-gray-400 bg-white flex items-center justify-center">
-                          <Play className="h-4 w-4 text-gray-600 stroke-2" strokeWidth={2} />
-                        </div>
-                        <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
-                          {video.duration}
+                        
+                        {/* Card content */}
+                        <div className="p-3">
+                          <h3 className="font-medium text-gray-900 mb-1 text-xs truncate">{video.title}</h3>
+                          <p className="text-xs text-gray-600 font-medium truncate">{video.subtitle}</p>
                         </div>
                       </div>
-                      
-                      {/* Card content */}
-                      <div className="p-3">
-                        <h3 className="font-medium text-gray-900 mb-1 text-xs truncate">{video.title}</h3>
-                        <p className="text-xs text-gray-600 font-medium truncate">{video.subtitle}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-4 pr-4">
+                    {videoCards.map((video) => (
+                      <div 
+                        key={video.id} 
+                        className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
+                      >
+                        {/* Thumbnail placeholder */}
+                        <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
+                          <div className="w-10 h-10 border-2 border-gray-400 bg-white flex items-center justify-center">
+                            <Play className="h-4 w-4 text-gray-600 stroke-2" strokeWidth={2} />
+                          </div>
+                          <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
+                            {video.duration}
+                          </div>
+                        </div>
+                        
+                        {/* Card content */}
+                        <div className="p-3">
+                          <h3 className="font-medium text-gray-900 mb-1 text-xs truncate">{video.title}</h3>
+                          <p className="text-xs text-gray-600 font-medium truncate">{video.subtitle}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
             </div>
 
             {/* Bottom Buttons */}
