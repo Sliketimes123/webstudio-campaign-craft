@@ -69,9 +69,21 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             return;
           }
           
+          // File selected successfully, close dialog and navigate to preview
+          onOpenChange(false);
+          navigate('/video-preview', { 
+            state: { 
+              video: { 
+                title: file.name,
+                duration: "00:00",
+                subtitle: `Uploaded: ${new Date().toLocaleDateString()}`,
+                fileSize: Math.round(file.size / (1024 * 1024)) + 'MB'
+              } 
+            } 
+          });
+          
           if (onFileSelect) {
             await onFileSelect(file);
-            onOpenChange(false);
           }
         }
         setIsUploading(false);
@@ -158,12 +170,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                   
                   <Button 
                     size="sm" 
-                    onClick={() => {
-                      if (!isUploading) {
-                        onOpenChange(false);
-                        navigate('/video-preview', { state: { video: { title: "Uploaded Video", duration: "00:00" } } });
-                      }
-                    }}
+                    onClick={handleFileUpload}
                     disabled={isUploading}
                     className="h-10 bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 font-medium disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed"
                   >
