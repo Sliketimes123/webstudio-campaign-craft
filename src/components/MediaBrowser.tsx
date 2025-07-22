@@ -16,6 +16,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
   const [selectedTab, setSelectedTab] = useState("Library");
   const [urlInput, setUrlInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const navigationItems = [
     { id: "Library", label: "Library", icon: Library },
@@ -38,18 +39,52 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
     },
   ];
 
-  const handleFileUpload = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*,video/*';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file && onFileSelect) {
-        onFileSelect(file);
-        onOpenChange(false);
-      }
-    };
-    input.click();
+  const handleFileUpload = async () => {
+    try {
+      setIsUploading(true);
+      
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'video/*,image/*,.mp4,.mov,.avi,.mkv,.webm,.jpg,.jpeg,.png,.gif';
+      input.multiple = false;
+      
+      input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) {
+          // Validate file size (max 100MB for videos)
+          const maxSize = 100 * 1024 * 1024; // 100MB
+          if (file.size > maxSize) {
+            alert('File size too large. Please select a file under 100MB.');
+            setIsUploading(false);
+            return;
+          }
+          
+          // Validate file type
+          const validTypes = ['video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm', 'image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+          if (!validTypes.some(type => file.type.includes(type.split('/')[1]) || file.name.toLowerCase().includes(type.split('/')[1]))) {
+            alert('Please select a valid video or image file.');
+            setIsUploading(false);
+            return;
+          }
+          
+          if (onFileSelect) {
+            await onFileSelect(file);
+            onOpenChange(false);
+          }
+        }
+        setIsUploading(false);
+      };
+      
+      input.oncancel = () => {
+        setIsUploading(false);
+      };
+      
+      input.click();
+    } catch (error) {
+      console.error('Upload error:', error);
+      setIsUploading(false);
+      alert('Upload failed. Please try again.');
+    }
   };
 
   const handleBack = () => {
@@ -117,11 +152,12 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                   
                   <Button 
                     size="sm" 
-                    onClick={handleFileUpload} 
-                    className="h-10 bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 font-medium"
+                    onClick={handleFileUpload}
+                    disabled={isUploading}
+                    className="h-10 bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 font-medium disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed"
                   >
-                    <Upload className="h-4 w-4 mr-2 stroke-2" strokeWidth={2} />
-                    Upload
+                    <Upload className={cn("h-4 w-4 mr-2 stroke-2", isUploading && "animate-pulse")} strokeWidth={2} />
+                    {isUploading ? "Uploading..." : "Upload"}
                   </Button>
                 </div>
               </div>
