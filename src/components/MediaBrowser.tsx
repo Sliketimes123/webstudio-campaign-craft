@@ -140,27 +140,27 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             </div>
 
             {/* Video Cards */}
-            <div className="flex-1 p-6 bg-gray-50">
-              <div className="grid grid-cols-2 gap-6">
+            <div className="p-6 bg-gray-50 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
+              <div className="grid grid-cols-3 gap-4">
                 {videoCards.map((video) => (
                   <div 
                     key={video.id} 
                     className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
                   >
                     {/* Thumbnail placeholder */}
-                    <div className="relative h-32 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
-                      <div className="w-16 h-16 border-2 border-gray-400 bg-white flex items-center justify-center">
-                        <Play className="h-6 w-6 text-gray-600 stroke-2" strokeWidth={2} />
+                    <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
+                      <div className="w-10 h-10 border-2 border-gray-400 bg-white flex items-center justify-center">
+                        <Play className="h-4 w-4 text-gray-600 stroke-2" strokeWidth={2} />
                       </div>
-                      <div className="absolute bottom-2 right-2 bg-gray-900 text-white text-xs px-2 py-1 font-medium border border-gray-900">
+                      <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
                         {video.duration}
                       </div>
                     </div>
                     
                     {/* Card content */}
-                    <div className="p-4">
-                      <h3 className="font-medium text-gray-900 mb-2 text-sm">{video.title}</h3>
-                      <p className="text-xs text-gray-600 font-medium">{video.subtitle}</p>
+                    <div className="p-3">
+                      <h3 className="font-medium text-gray-900 mb-1 text-xs truncate">{video.title}</h3>
+                      <p className="text-xs text-gray-600 font-medium truncate">{video.subtitle}</p>
                     </div>
                   </div>
                 ))}
