@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, Upload, Library, Triangle, UploadIcon, Search } from "lucide-react";
+import { Play, Upload, Library, Triangle, UploadIcon, Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -198,13 +198,39 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                     ].map((video) => (
                       <div 
                         key={video.id} 
-                        className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
+                        className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors group"
                       >
                         {/* Thumbnail placeholder */}
-                        <div className="relative h-24 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
+                        <div className="relative h-24 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center overflow-hidden">
                           <div className="w-12 h-12 border-2 border-gray-400 bg-white flex items-center justify-center">
                             <Play className="h-5 w-5 text-gray-600 stroke-2" strokeWidth={2} />
                           </div>
+                          
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-4">
+                            <Button
+                              size="sm"
+                              className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('Play video:', video.id);
+                              }}
+                            >
+                              <Play className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('Add video:', video.id);
+                                onOpenChange(false);
+                              }}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
                           <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
                             {video.duration}
                           </div>
@@ -223,13 +249,39 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                     {videoCards.map((video) => (
                       <div 
                         key={video.id} 
-                        className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
+                        className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors group"
                       >
                         {/* Thumbnail placeholder */}
-                        <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center">
+                        <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center overflow-hidden">
                           <div className="w-10 h-10 border-2 border-gray-400 bg-white flex items-center justify-center">
                             <Play className="h-4 w-4 text-gray-600 stroke-2" strokeWidth={2} />
                           </div>
+                          
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3">
+                            <Button
+                              size="sm"
+                              className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('Play video:', video.id);
+                              }}
+                            >
+                              <Play className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('Add video:', video.id);
+                                onOpenChange(false);
+                              }}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          
                           <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
                             {video.duration}
                           </div>
