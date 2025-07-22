@@ -141,25 +141,25 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             </div>
 
             {/* Video Cards */}
-            <div className="flex-1 p-6 bg-gray-50">
-              <ScrollArea className="h-full w-full">
-                <div className="pr-4">
+            <div className="flex-1 p-6 bg-gray-50 min-h-0">
+              <ScrollArea className="h-full">
+                <div className="space-y-4">
                 {selectedTab === "Silke" ? (
-                  <div className="grid grid-cols-2 gap-4 pr-4">
-                    {[
+                  <div className="grid grid-cols-2 gap-4">
+                    {Array.from({ length: 12 }, (_, i) => [
                       {
-                        id: 1,
+                        id: i * 2 + 1,
                         title: "SilkeVod",
                         subtitle: "Slike ID: 1xv3dgq9z9",
                         duration: "05:02",
                       },
                       {
-                        id: 2,
+                        id: i * 2 + 2,
                         title: "Matrix Scene",
                         subtitle: "Slike ID: 2bw8kx7p4m", 
                         duration: "03:45",
                       },
-                    ].map((video) => (
+                    ]).flat().map((video) => (
                       <div 
                         key={video.id} 
                         className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors"
