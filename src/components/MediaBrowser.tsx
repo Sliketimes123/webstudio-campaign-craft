@@ -142,8 +142,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
 
             {/* Video Cards */}
             <div className="flex-1 p-6 bg-gray-50">
-              <ScrollArea className="h-full pr-4">
-                <div className="pr-2">
+              <ScrollArea className="h-full w-full">
+                <div className="pr-4">
                 {selectedTab === "Silke" ? (
                   <div className="grid grid-cols-2 gap-4 pr-4">
                     {[
