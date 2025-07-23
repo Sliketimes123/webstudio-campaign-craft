@@ -491,18 +491,18 @@ const Index = () => {
           {/* Action Buttons */}
           <div className="flex justify-end gap-4 pt-4">
             <Button 
+              type="submit" 
+              className="px-8 py-3 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
+            >
+              Save Campaign
+            </Button>
+            <Button 
               type="button"
               variant="outline"
               onClick={handleCancel}
               className="px-8 py-3 text-sm font-medium rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
             >
               Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              className="px-8 py-3 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
-            >
-              Save Campaign
             </Button>
           </div>
         </form>
