@@ -309,26 +309,40 @@ const Settings = () => {
     }
   };
 
-  // Calculate total duration between start and end dates
-  const calculateTotalDuration = (startDateTime: string, endDateTime: string) => {
+  // Calculate total duration of all videos in a campaign
+  const calculateTotalDuration = (campaignName: string) => {
     try {
-      const startDate = parse(startDateTime, "yyyy-MM-dd hh:mm a", new Date());
-      const endDate = parse(endDateTime, "yyyy-MM-dd hh:mm a", new Date());
+      // Get videos from localStorage (same as in Index.tsx)
+      const videoList = JSON.parse(localStorage.getItem('videoList') || '[]');
       
-      const diffInMs = endDate.getTime() - startDate.getTime();
-      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-      const diffInHours = Math.floor((diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const diffInMinutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+      // For now, we'll simulate that videos belong to campaigns
+      // In a real app, videos would have a campaignId or campaignName field
+      // Since we don't have that relationship yet, we'll return a sample duration
+      // You can modify this logic based on how you want to associate videos with campaigns
       
-      if (diffInDays > 0) {
-        return `${diffInDays}d ${diffInHours}h ${diffInMinutes}m`;
-      } else if (diffInHours > 0) {
-        return `${diffInHours}h ${diffInMinutes}m`;
-      } else {
-        return `${diffInMinutes}m`;
+      let totalSeconds = 0;
+      
+      // Sample calculation - you can modify this logic
+      videoList.forEach((video: any) => {
+        if (video.duration) {
+          // Parse duration from "mm:ss" format
+          const [minutes, seconds] = video.duration.split(':').map(Number);
+          totalSeconds += (minutes * 60) + seconds;
+        }
+      });
+      
+      // If no videos associated with this campaign, return 00:00
+      if (totalSeconds === 0) {
+        return "00:00";
       }
+      
+      // Convert total seconds back to mm:ss format
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const remainingSeconds = totalSeconds % 60;
+      
+      return `${totalMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     } catch (error) {
-      return "N/A";
+      return "00:00";
     }
   };
 
@@ -496,11 +510,11 @@ const Settings = () => {
                                   {item.repeatFrequency}
                                 </span>
                               </TableCell>
-                              <TableCell className="text-left text-gray-900 py-4 hidden xl:table-cell">
-                                <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-md text-xs font-medium">
-                                  {calculateTotalDuration(item.startDateTime, item.endDateTime)}
-                                </span>
-                              </TableCell>
+                               <TableCell className="text-left text-gray-900 py-4 hidden xl:table-cell">
+                                 <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-md text-xs font-medium">
+                                   {calculateTotalDuration(item.campaignName)}
+                                 </span>
+                               </TableCell>
                               <TableCell className="text-left py-4">
                                 <div className="flex items-center gap-2">
                                    <Tooltip>
