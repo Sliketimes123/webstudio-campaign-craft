@@ -296,13 +296,22 @@ const Settings = () => {
     setCurrentPage(page);
   };
 
-  // Format date to DD Month YYYY format
+  // Format date to DD Month YYYY with line break for time
   const formatDateTime = (dateTimeString: string) => {
     try {
       // Parse the date from "YYYY-MM-DD HH:mm AM/PM" format
       const parsedDate = parse(dateTimeString, "yyyy-MM-dd hh:mm a", new Date());
-      // Format to "DD Month YYYY HH:mm AM/PM"
-      return format(parsedDate, "dd MMMM yyyy hh:mm a");
+      // Format date part
+      const datePart = format(parsedDate, "dd MMMM yyyy");
+      // Format time part
+      const timePart = format(parsedDate, "hh:mm a");
+      // Return JSX with line break
+      return (
+        <div>
+          <div>{datePart}</div>
+          <div>{timePart}</div>
+        </div>
+      );
     } catch (error) {
       // If parsing fails, return original string
       return dateTimeString;
@@ -452,7 +461,7 @@ const Settings = () => {
                             <TableHead className="text-left font-medium text-gray-900 py-4">Status</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Repeat Frequency (Day wise)</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Schedule</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden xl:table-cell">Total Duration</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Action</TableHead>
                           </TableRow>
