@@ -447,11 +447,11 @@ const Settings = () => {
                         <TableHeader>
                           <TableRow className="border-b border-gray-200 bg-gray-50/50">
                             <TableHead className="text-left font-medium text-gray-900 py-4">#</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4">Campaign Name</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4">Name</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden sm:table-cell">Fast Channel</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Status</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date and Time</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date and Time</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Repeat Frequency (Day wise)</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden xl:table-cell">Total Duration</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Action</TableHead>
