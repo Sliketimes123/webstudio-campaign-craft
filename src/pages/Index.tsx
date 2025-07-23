@@ -41,6 +41,7 @@ const Index = () => {
   const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<any[]>([]);
   const [videoList, setVideoList] = useState<any[]>([]);
+  const [draggedVideoIndex, setDraggedVideoIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     campaignName: "",
     adType: "Video Ad",
@@ -243,6 +244,38 @@ const Index = () => {
     }
   };
 
+  const handleVideoRowDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedVideoIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleVideoRowDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleVideoRowDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedVideoIndex === null || draggedVideoIndex === dropIndex) {
+      setDraggedVideoIndex(null);
+      return;
+    }
+
+    const newVideoList = [...videoList];
+    const draggedVideo = newVideoList[draggedVideoIndex];
+    
+    // Remove the dragged video from its current position
+    newVideoList.splice(draggedVideoIndex, 1);
+    
+    // Insert it at the new position
+    newVideoList.splice(dropIndex, 0, draggedVideo);
+    
+    setVideoList(newVideoList);
+    localStorage.setItem('videoList', JSON.stringify(newVideoList));
+    setDraggedVideoIndex(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-roboto">
       {/* Header */}
@@ -355,7 +388,7 @@ const Index = () => {
           {/* Video List Section */}
           {videoList.length > 0 && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Video Library</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Library</h3>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -369,7 +402,18 @@ const Index = () => {
                   </TableHeader>
                   <TableBody>
                     {videoList.map((video, index) => (
-                      <TableRow key={video.id}>
+                      <TableRow 
+                        key={video.id}
+                        draggable
+                        onDragStart={(e) => handleVideoRowDragStart(e, index)}
+                        onDragOver={handleVideoRowDragOver}
+                        onDrop={(e) => handleVideoRowDrop(e, index)}
+                        className={cn(
+                          "cursor-move transition-colors",
+                          draggedVideoIndex === index && "opacity-50",
+                          "hover:bg-gray-50"
+                        )}
+                      >
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell className="font-medium">{video.name}</TableCell>
                         <TableCell>{video.source}</TableCell>
