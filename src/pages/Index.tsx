@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal } from "lucide-react";
+import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -276,6 +276,17 @@ const Index = () => {
     setDraggedVideoIndex(null);
   };
 
+  const removeVideo = (videoId: number) => {
+    const updatedVideoList = videoList.filter(video => video.id !== videoId);
+    setVideoList(updatedVideoList);
+    localStorage.setItem('videoList', JSON.stringify(updatedVideoList));
+    
+    toast({
+      title: "Video Removed",
+      description: "Video has been removed from the campaign library",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-roboto">
       {/* Header */}
@@ -425,7 +436,7 @@ const Index = () => {
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
+                            <DropdownMenuContent align="end" className="bg-white border border-gray-200 shadow-lg z-50">
                               <DropdownMenuItem>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View
@@ -433,6 +444,10 @@ const Index = () => {
                               <DropdownMenuItem>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => removeVideo(video.id)} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Remove
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
