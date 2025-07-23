@@ -406,10 +406,10 @@ const Settings = () => {
               <Card className="bg-white border border-gray-200 shadow-sm">
                 <CardContent className="p-6 space-y-6">
                   {/* Search and Filter Controls */}
-                  <div className="flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-center pt-2">
+                  <div className="flex flex-row gap-6 justify-between items-center pt-2">
                     <h2 className="text-xl font-semibold text-gray-900">Campaign Management</h2>
                     
-                    <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+                    <div className="flex flex-row gap-4 items-center">
                       {/* Campaign Search */}
                       <div className="space-y-1">
                         <span className="text-xs text-gray-500">Campaign Search</span>
@@ -419,7 +419,7 @@ const Settings = () => {
                             placeholder="Enter name"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-7 h-8 text-sm w-full sm:w-48 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            className="pl-7 h-8 text-sm w-48 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
                       </div>
