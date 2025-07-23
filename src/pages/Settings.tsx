@@ -424,26 +424,8 @@ const Settings = () => {
                         </div>
                       </div>
 
-                      {/* Campaign Filter and Create New Button */}
-                      <div className="flex gap-3 items-end">
-                        <div className="space-y-1">
-                          <span className="text-xs text-gray-500">Campaign</span>
-                          <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
-                            <SelectTrigger className="h-8 w-full sm:w-40 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                              <SelectValue placeholder="Select campaign" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                              <SelectItem value="all">All Campaigns</SelectItem>
-                              {campaignOptions.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {/* Create New Button */}
+                      {/* Create New Button */}
+                      <div className="flex items-end">
                         <Button 
                           onClick={handleCreateNew}
                           size="sm"
