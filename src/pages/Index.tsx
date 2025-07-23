@@ -298,7 +298,7 @@ const Index = () => {
                   className="h-8 text-sm border-gray-300 hover:bg-gray-50"
                   onClick={() => setMediaBrowserOpen(true)}
                 >
-                  Add
+                  Select
                 </Button>
                 {formData.file && (
                   <p className="text-sm text-blue-600 mt-2">
@@ -435,7 +435,7 @@ const Index = () => {
               type="submit" 
               className="px-8 py-3 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
             >
-              Add Campaign
+              Save Campaign
             </Button>
           </div>
         </form>
