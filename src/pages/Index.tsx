@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Upload, X, CheckCircle, Edit, Eye, MoreHorizontal } from "lucide-react";
+import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -274,7 +274,7 @@ const Index = () => {
           {/* Upload Media File */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">Upload Media File</Label>
+              <Label className="text-sm font-medium text-gray-700">Select Media File</Label>
               <div
                 className={cn(
                   "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
@@ -287,9 +287,9 @@ const Index = () => {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
               >
-                <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                <MousePointer className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                 <p className="text-sm text-gray-600 mb-2">
-                  Add a video file
+                  Select a video file
                 </p>
                 <Button 
                   type="button" 
