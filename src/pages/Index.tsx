@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2, FileVideo } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -331,10 +331,7 @@ const Index = () => {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
               >
-                <MousePointer className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600 mb-2">
-                  Select a video file
-                </p>
+                <FileVideo className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                 <Button 
                   type="button" 
                   variant="outline" 
