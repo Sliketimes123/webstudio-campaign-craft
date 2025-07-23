@@ -409,7 +409,7 @@ const Settings = () => {
                   <div className="flex flex-row gap-6 justify-between items-center pt-2">
                     <h2 className="text-xl font-semibold text-gray-900">Campaign Management</h2>
                     
-                    <div className="flex flex-row gap-4 items-center">
+                    <div className="flex flex-row gap-4 items-end">
                       {/* Campaign Search */}
                       <div className="space-y-1">
                         <span className="text-xs text-gray-500">Campaign Search</span>
@@ -425,15 +425,13 @@ const Settings = () => {
                       </div>
 
                       {/* Create New Button */}
-                      <div className="flex items-end">
-                        <Button 
-                          onClick={handleCreateNew}
-                          size="sm"
-                          className="h-8 bg-blue-600 hover:bg-blue-700 text-white px-4 text-sm transition-colors"
-                        >
-                          Create New
-                        </Button>
-                      </div>
+                      <Button 
+                        onClick={handleCreateNew}
+                        size="sm"
+                        className="h-8 bg-blue-600 hover:bg-blue-700 text-white px-4 text-sm transition-colors"
+                      >
+                        Create New
+                      </Button>
                     </div>
                   </div>
 
