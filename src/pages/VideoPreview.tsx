@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Play, Pause, Volume2, Maximize, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,23 @@ const VideoPreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const videoData = location.state?.video;
+  
+  // State for trim markers
+  const [inTime, setInTime] = useState("00:00:00");
+  const [outTime, setOutTime] = useState("00:00:00");
+  
+  // Convert time string to seconds for position calculation
+  const timeToSeconds = (timeStr: string) => {
+    const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+  };
+  
+  // Assume video duration of 300 seconds (5 minutes) for demo
+  const videoDuration = 300;
+  
+  // Calculate marker positions as percentages
+  const inPosition = (timeToSeconds(inTime) / videoDuration) * 100;
+  const outPosition = (timeToSeconds(outTime) / videoDuration) * 100;
 
   const handleBack = () => {
     navigate(-1);
@@ -64,12 +81,24 @@ const VideoPreview = () => {
                     
                     <div className="flex-1 flex items-center gap-2">
                       <span className="text-white text-sm">0:00</span>
-                      <Slider
-                        defaultValue={[0]}
-                        max={100}
-                        step={1}
-                        className="flex-1"
-                      />
+                      <div className="relative flex-1">
+                        <Slider
+                          defaultValue={[0]}
+                          max={100}
+                          step={1}
+                          className="flex-1"
+                        />
+                        {/* In Marker */}
+                        <div 
+                          className="absolute top-1/2 -translate-y-1/2 w-2 h-4 bg-green-500 rounded-sm"
+                          style={{ left: `${Math.min(Math.max(inPosition, 0), 100)}%`, transform: 'translateX(-50%) translateY(-50%)' }}
+                        />
+                        {/* Out Marker */}
+                        <div 
+                          className="absolute top-1/2 -translate-y-1/2 w-2 h-4 bg-red-500 rounded-sm"
+                          style={{ left: `${Math.min(Math.max(outPosition, 0), 100)}%`, transform: 'translateX(-50%) translateY(-50%)' }}
+                        />
+                      </div>
                       <span className="text-white text-sm">{videoData?.duration || "0:00"}</span>
                     </div>
 
@@ -98,7 +127,8 @@ const VideoPreview = () => {
                       type="time"
                       step="1"
                       className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
-                      defaultValue="00:00:00"
+                      value={inTime}
+                      onChange={(e) => setInTime(e.target.value)}
                     />
                   </div>
                   <div>
@@ -107,7 +137,8 @@ const VideoPreview = () => {
                       type="time"
                       step="1"
                       className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
-                      defaultValue="00:00:00"
+                      value={outTime}
+                      onChange={(e) => setOutTime(e.target.value)}
                     />
                   </div>
                 </div>
