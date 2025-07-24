@@ -457,33 +457,6 @@ const Index = () => {
             </div>
           )}
 
-          {/* Ad Preview Section */}
-          {formData.file && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Ad Preview</h3>
-              <div className="flex justify-center">
-                <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                  {formData.file.type.startsWith('image/') ? (
-                    <img 
-                      src={URL.createObjectURL(formData.file)} 
-                      alt="Ad preview" 
-                      className="max-w-sm max-h-64 object-contain rounded"
-                    />
-                  ) : formData.file.type.startsWith('video/') ? (
-                    <video 
-                      src={URL.createObjectURL(formData.file)} 
-                      controls 
-                      className="max-w-sm max-h-64 rounded"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center w-64 h-32 bg-gray-200 rounded">
-                      <p className="text-gray-500">Preview not available</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-4 pt-4">

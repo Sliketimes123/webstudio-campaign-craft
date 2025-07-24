@@ -354,6 +354,9 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             };
             uploadQueue.push(newUpload);
             localStorage.setItem('uploadQueue', JSON.stringify(uploadQueue));
+            
+            // Navigate to campaign manager to show progress bar
+            window.location.href = '/campaign-manager';
           }
           onOpenChange(false);
         }}
