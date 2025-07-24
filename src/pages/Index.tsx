@@ -67,12 +67,19 @@ const Index = () => {
     { key: "S", label: "Sat" },
   ];
 
-  // Load upload queue and video list from localStorage on component mount
+  // Load upload queue, video list, and persist campaign name from localStorage on component mount
   useEffect(() => {
     const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
     const savedVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
+    const savedCampaignName = localStorage.getItem('currentCampaignName') || '';
+    
     setUploadQueue(savedQueue);
     setVideoList(savedVideoList);
+    
+    // Restore campaign name if it exists
+    if (savedCampaignName) {
+      setFormData(prev => ({ ...prev, campaignName: savedCampaignName }));
+    }
     
     // Simulate upload progress for items in queue
     savedQueue.forEach((item: any, index: number) => {
@@ -194,6 +201,9 @@ const Index = () => {
     existingCampaigns.push(campaignData);
     localStorage.setItem('campaigns', JSON.stringify(existingCampaigns));
     
+    // Clear persisted campaign name after successful save
+    localStorage.removeItem('currentCampaignName');
+    
     toast({
       title: "Success!",
       description: `Campaign "${formData.campaignName}" saved successfully`,
@@ -220,6 +230,8 @@ const Index = () => {
   };
 
   const handleCancel = () => {
+    // Clear persisted campaign name on cancel
+    localStorage.removeItem('currentCampaignName');
     navigate(-1); // Go back to previous page
   };
 
@@ -323,7 +335,12 @@ const Index = () => {
                 id="campaignName"
                 placeholder="Enter campaign name"
                 value={formData.campaignName}
-                onChange={(e) => setFormData(prev => ({ ...prev, campaignName: e.target.value }))}
+                onChange={(e) => {
+                  const newCampaignName = e.target.value;
+                  setFormData(prev => ({ ...prev, campaignName: newCampaignName }));
+                  // Persist campaign name to localStorage on every change
+                  localStorage.setItem('currentCampaignName', newCampaignName);
+                }}
                 className="h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
