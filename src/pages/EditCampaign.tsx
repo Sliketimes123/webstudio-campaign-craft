@@ -257,7 +257,7 @@ const EditCampaign = () => {
       <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <h1 className="text-xl font-medium text-center text-gray-900">
-            Edit Ad Campaign – WebStudio (24/7 Events)
+            Fast Channel Ad campaign
           </h1>
         </div>
       </div>
