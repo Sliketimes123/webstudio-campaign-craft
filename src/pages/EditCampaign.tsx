@@ -35,38 +35,16 @@ const EditCampaign = () => {
   const { toast } = useToast();
   const { id } = useParams();
   
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
-  const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
   const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<any[]>([]);
   const [videoList, setVideoList] = useState<any[]>([]);
   const [draggedVideoIndex, setDraggedVideoIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     campaignName: "",
-    adType: "",
     file: null as File | null,
-    startDate: undefined as Date | undefined,
-    endDate: undefined as Date | undefined,
-    startTime: "",
-    endTime: "",
-    loopCampaign: false,
-    loopFrequency: 1,
   });
 
-  // Exclude Video File from ad types for edit page  
-  const adTypes = ["Image", "L-band Ad", "U-band Ad", "Video Ad"];
-  const channels = ["ET Fast", "Speaking Tree", "TOI Global", "NBT Entertainment"];
-  const days = [
-    { key: "S", label: "Sun" },
-    { key: "M", label: "Mon" },
-    { key: "T", label: "Tue" },
-    { key: "W", label: "Wed" },
-    { key: "T", label: "Thu" },
-    { key: "F", label: "Fri" },
-    { key: "S", label: "Sat" },
-  ];
 
   // Load campaign data, upload queue, and video list on component mount
   useEffect(() => {
@@ -90,19 +68,8 @@ const EditCampaign = () => {
       if (campaign) {
         setFormData({
           campaignName: campaign.campaignName || "",
-          adType: campaign.adType === "Video File" ? "" : campaign.adType || "", // Reset if video
           file: null, // Don't load existing file
-          startDate: campaign.startDate ? new Date(campaign.startDate) : undefined,
-          endDate: campaign.endDate ? new Date(campaign.endDate) : undefined,
-          startTime: campaign.startTime || "",
-          endTime: campaign.endTime || "",
-          loopCampaign: campaign.loopCampaign || false,
-          loopFrequency: campaign.loopFrequency || 1,
         });
-        
-        setSelectedChannels(campaign.channels || []);
-        setSelectedDays(campaign.selectedDays || []);
-        setRepeatFrequencyEnabled(campaign.repeatFrequencyEnabled || false);
       } else {
         toast({
           title: "Error",
@@ -124,24 +91,6 @@ const EditCampaign = () => {
       return false;
     }
     
-    if (!formData.adType) {
-      toast({
-        title: "Validation Error", 
-        description: "Ad type selection is required",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    if (selectedChannels.length === 0) {
-      toast({
-        title: "Validation Error",
-        description: "At least one channel must be selected",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
     return true;
   };
 
@@ -154,9 +103,6 @@ const EditCampaign = () => {
 
     const updatedCampaign = {
       ...formData,
-      channels: selectedChannels,
-      selectedDays: repeatFrequencyEnabled ? selectedDays : [],
-      repeatFrequencyEnabled,
       updatedAt: new Date().toISOString(),
       id: id,
     };
@@ -181,22 +127,6 @@ const EditCampaign = () => {
 
   const handleCancel = () => {
     navigate(-1); // Go back to previous page
-  };
-
-  const toggleDay = (dayKey: string) => {
-    setSelectedDays(prev => 
-      prev.includes(dayKey)
-        ? prev.filter(day => day !== dayKey)
-        : [...prev, dayKey]
-    );
-  };
-
-  const toggleChannel = (channel: string) => {
-    setSelectedChannels(prev =>
-      prev.includes(channel)
-        ? prev.filter(ch => ch !== channel)
-        : [...prev, channel]
-    );
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -349,59 +279,37 @@ const EditCampaign = () => {
             </div>
           </div>
 
-          {/* Ad Type Selection */}
+          {/* Upload Media File */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label htmlFor="adType" className="text-sm font-medium text-gray-700">Select Ad Type</Label>
-                <Select 
-                  value={formData.adType} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, adType: value }))}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-gray-700">Select Media File</Label>
+              <div
+                className={cn(
+                  "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
+                  dragActive
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
+                )}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <FileVideo className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 text-sm border-gray-300 hover:bg-gray-50"
+                  onClick={() => setMediaBrowserOpen(true)}
                 >
-                  <SelectTrigger className="h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <SelectValue placeholder="Choose ad type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                    {adTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* File Upload */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Select Media File</Label>
-                <div
-                  className={cn(
-                    "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
-                    dragActive
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
-                  )}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <FileVideo className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    className="h-8 text-sm border-gray-300 hover:bg-gray-50"
-                    onClick={() => setMediaBrowserOpen(true)}
-                  >
-                    Select
-                  </Button>
-                  {formData.file && (
-                    <p className="text-sm text-blue-600 mt-2">
-                      {formData.file.name}
-                    </p>
-                  )}
-                </div>
+                  Select
+                </Button>
+                {formData.file && (
+                  <p className="text-sm text-blue-600 mt-2">
+                    {formData.file.name}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -540,185 +448,6 @@ const EditCampaign = () => {
               </div>
             </div>
           )}
-
-          {/* Select Fast Channel */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Select Fast Channel</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {channels.map((channel) => (
-                <div key={channel} className="flex items-center space-x-3">
-                  <Checkbox
-                    id={channel}
-                    checked={selectedChannels.includes(channel)}
-                    onCheckedChange={() => toggleChannel(channel)}
-                    className="border-gray-300"
-                  />
-                  <Label htmlFor={channel} className="text-sm text-gray-700">{channel}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Scheduling */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-6">Scheduling</h3>
-            <div className="space-y-6">
-              {/* Date and Time Pickers */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Start Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className={cn(
-                          "w-full pl-3 text-left font-normal text-sm h-10 border-gray-300 focus:border-blue-500",
-                          !formData.startDate && "text-gray-500"
-                        )}
-                      >
-                        {formData.startDate ? (
-                          format(formData.startDate, "dd/MM")
-                        ) : (
-                          <span>Start Date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={formData.startDate}
-                        onSelect={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">End Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className={cn(
-                          "w-full pl-3 text-left font-normal text-sm h-10 border-gray-300 focus:border-blue-500",
-                          !formData.endDate && "text-gray-500"
-                        )}
-                      >
-                        {formData.endDate ? (
-                          format(formData.endDate, "dd/MM")
-                        ) : (
-                          <span>End Date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={formData.endDate}
-                        onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="startTime" className="text-sm font-medium text-gray-700">Start Time</Label>
-                  <Input
-                    id="startTime"
-                    type="time"
-                    className="text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    value={formData.startTime}
-                    onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endTime" className="text-sm font-medium text-gray-700">End Time</Label>
-                  <Input
-                    id="endTime"
-                    type="time"
-                    className="text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    value={formData.endTime}
-                    onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              {/* Day Selection and Loop Campaign */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <Label className="text-sm font-medium text-gray-700">Repeat Frequency</Label>
-                    <Switch
-                      checked={repeatFrequencyEnabled}
-                      onCheckedChange={setRepeatFrequencyEnabled}
-                    />
-                  </div>
-                  {repeatFrequencyEnabled && (
-                    <div className="flex gap-2">
-                      {days.map((day) => (
-                        <Button
-                          key={day.key}
-                          type="button"
-                          variant={selectedDays.includes(day.key) ? "default" : "outline"}
-                          size="sm"
-                          className={cn(
-                            "w-10 h-10 rounded-full p-0 text-sm",
-                            selectedDays.includes(day.key)
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                          )}
-                          onClick={() => toggleDay(day.key)}
-                        >
-                          {day.key}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Loop Campaign */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id="loopCampaign"
-                      checked={formData.loopCampaign}
-                      onCheckedChange={(checked) => 
-                        setFormData(prev => ({ ...prev, loopCampaign: !!checked }))
-                      }
-                      className="border-gray-300"
-                    />
-                    <Label htmlFor="loopCampaign" className="text-sm text-gray-700">Run Campaign in Loop</Label>
-                  </div>
-                  
-                  {formData.loopCampaign && (
-                    <div className="space-y-2">
-                      <Label htmlFor="loopFrequency" className="text-sm font-medium text-gray-700">Loop Frequency (0-100)</Label>
-                      <Input
-                        id="loopFrequency"
-                        type="number"
-                        min="0"
-                        max="100"
-                        className="w-24 text-sm h-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        value={formData.loopFrequency}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          loopFrequency: Number(e.target.value) 
-                        }))}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Action Buttons */}
           <div className="flex justify-center gap-6 pt-4">
