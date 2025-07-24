@@ -1,14 +1,21 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Play, Pause, Volume2, Maximize, Settings } from "lucide-react";
+import { Play, Volume2, Maximize, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const VideoPreview = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const videoData = location.state?.video;
-  
+interface VideoPreviewProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  videoData?: {
+    title: string;
+    duration: string;
+    subtitle: string;
+  };
+  onUseVideo?: () => void;
+}
+
+const VideoPreview = ({ open, onOpenChange, videoData, onUseVideo }: VideoPreviewProps) => {
   // State for trim markers
   const [inTime, setInTime] = useState("00:00:00");
   const [outTime, setOutTime] = useState("00:00:00");
@@ -26,34 +33,18 @@ const VideoPreview = () => {
   const inPosition = (timeToSeconds(inTime) / videoDuration) * 100;
   const outPosition = (timeToSeconds(outTime) / videoDuration) * 100;
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBack}
-            className="mr-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-lg font-semibold">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-6xl w-full h-[90vh] p-0">
+        <DialogHeader className="px-6 py-4 border-b">
+          <DialogTitle>
             {videoData?.title || "Video Preview"}
-          </h1>
-        </div>
-      </div>
+          </DialogTitle>
+        </DialogHeader>
 
-      {/* Main Content */}
-      <div className="container mx-auto p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
             {/* Left Column - Video Player */}
             <div className="space-y-4">
               {/* Video Player */}
@@ -175,22 +166,10 @@ const VideoPreview = () => {
                 <Button 
                   className="w-full"
                   onClick={() => {
-                    // Add video to upload queue and redirect
-                    const videoData = location.state?.video;
-                    if (videoData) {
-                      // Store video data in localStorage to pass to campaign manager
-                      const uploadQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
-                      const newUpload = {
-                        id: Date.now(),
-                        title: videoData.title,
-                        progress: 0,
-                        status: 'uploading',
-                        timestamp: new Date().toISOString()
-                      };
-                      uploadQueue.push(newUpload);
-                      localStorage.setItem('uploadQueue', JSON.stringify(uploadQueue));
+                    if (onUseVideo) {
+                      onUseVideo();
                     }
-                    navigate('/campaign-manager');
+                    onOpenChange(false);
                   }}
                 >
                   Use This Video
@@ -199,8 +178,8 @@ const VideoPreview = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

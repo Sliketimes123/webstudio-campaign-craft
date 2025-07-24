@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Settings from "./pages/Settings";
 import EditCampaign from "./pages/EditCampaign";
-import VideoPreview from "./pages/VideoPreview";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,7 +20,6 @@ const App = () => (
           <Route path="/" element={<Settings />} />
           <Route path="/campaign-manager" element={<Index />} />
           <Route path="/edit-campaign/:id" element={<EditCampaign />} />
-          <Route path="/video-preview" element={<VideoPreview />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

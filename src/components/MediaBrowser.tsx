@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Play, Upload, Library, Triangle, UploadIcon, Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import VideoPreview from "@/pages/VideoPreview";
 
 interface MediaBrowserProps {
   open: boolean;
@@ -14,11 +14,12 @@ interface MediaBrowserProps {
 }
 
 const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileSelect }) => {
-  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("Library");
   const [urlInput, setUrlInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [videoPreviewOpen, setVideoPreviewOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
   const navigationItems = [
     { id: "Library", label: "Library", icon: Library },
@@ -69,18 +70,14 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             return;
           }
           
-          // File selected successfully, close dialog and navigate to preview
-          onOpenChange(false);
-          navigate('/video-preview', { 
-            state: { 
-              video: { 
-                title: file.name,
-                duration: "00:00",
-                subtitle: `Uploaded: ${new Date().toLocaleDateString()}`,
-                fileSize: Math.round(file.size / (1024 * 1024)) + 'MB'
-              } 
-            } 
+          // File selected successfully, open video preview popup
+          setSelectedVideo({
+            title: file.name,
+            duration: "00:00",
+            subtitle: `Uploaded: ${new Date().toLocaleDateString()}`,
+            fileSize: Math.round(file.size / (1024 * 1024)) + 'MB'
           });
+          setVideoPreviewOpen(true);
           
           if (onFileSelect) {
             await onFileSelect(file);
@@ -159,8 +156,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                     variant="outline" 
                     className="h-10 w-10 p-0 border-2 border-gray-300 bg-white hover:bg-gray-50"
                     onClick={() => {
-                      onOpenChange(false);
-                      navigate('/video-preview', { state: { video: { title: "URL Video", duration: "00:00" } } });
+                      setSelectedVideo({ title: "URL Video", duration: "00:00", subtitle: "From URL" });
+                      setVideoPreviewOpen(true);
                     }}
                   >
                     <Play className="h-4 w-4 stroke-2" strokeWidth={2} />
@@ -231,8 +228,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                onOpenChange(false);
-                                navigate('/video-preview', { state: { video } });
+                                setSelectedVideo(video);
+                                setVideoPreviewOpen(true);
                               }}
                             >
                               <Play className="h-4 w-4" />
@@ -242,8 +239,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                onOpenChange(false);
-                                navigate('/video-preview', { state: { video } });
+                                setSelectedVideo(video);
+                                setVideoPreviewOpen(true);
                               }}
                             >
                               <Plus className="h-4 w-4" />
@@ -283,8 +280,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                onOpenChange(false);
-                                navigate('/video-preview', { state: { video } });
+                                setSelectedVideo(video);
+                                setVideoPreviewOpen(true);
                               }}
                             >
                               <Play className="h-3 w-3" />
@@ -294,8 +291,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                onOpenChange(false);
-                                navigate('/video-preview', { state: { video } });
+                                setSelectedVideo(video);
+                                setVideoPreviewOpen(true);
                               }}
                             >
                               <Plus className="h-3 w-3" />
@@ -339,6 +336,28 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
           </div>
         </div>
       </DialogContent>
+      
+      <VideoPreview
+        open={videoPreviewOpen}
+        onOpenChange={setVideoPreviewOpen}
+        videoData={selectedVideo}
+        onUseVideo={() => {
+          if (selectedVideo) {
+            // Add video to upload queue
+            const uploadQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+            const newUpload = {
+              id: Date.now(),
+              title: selectedVideo.title,
+              progress: 0,
+              status: 'uploading',
+              timestamp: new Date().toISOString()
+            };
+            uploadQueue.push(newUpload);
+            localStorage.setItem('uploadQueue', JSON.stringify(uploadQueue));
+          }
+          onOpenChange(false);
+        }}
+      />
     </Dialog>
   );
 };
