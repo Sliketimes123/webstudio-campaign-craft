@@ -199,6 +199,20 @@ const Index = () => {
       description: `Campaign "${formData.campaignName}" saved successfully`,
     });
     
+    // Reset form data except campaign name
+    setFormData(prev => ({
+      ...prev,
+      // Keep campaign name intact
+      adType: "Video Ad",
+      file: null,
+      startDate: undefined,
+      endDate: undefined,
+      startTime: "",
+      endTime: "",
+      loopCampaign: false,
+      loopFrequency: 1,
+    }));
+    
     // Redirect to settings page after saving
     setTimeout(() => {
       navigate('/settings');
