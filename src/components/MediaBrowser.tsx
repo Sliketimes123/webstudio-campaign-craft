@@ -176,7 +176,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
           <div className="flex-1 flex flex-col bg-white">
             {/* Top Bar */}
             <div className="border-b-2 border-gray-300 p-4">
-              <div className="flex items-center justify-between gap-6">
+              <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 max-w-md">
                   <Input
                     placeholder="Enter URL"
@@ -186,7 +186,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                   />
                 </div>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <Button 
                     size="sm" 
                     variant="outline" 
@@ -199,7 +199,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                     <Play className="h-4 w-4 stroke-2" strokeWidth={2} />
                   </Button>
                   
-                  <span className="text-sm font-medium text-gray-600 mx-2">– OR –</span>
+                  <span className="text-sm font-medium text-gray-600">– OR –</span>
                   
                   <Button 
                     size="sm" 
@@ -399,19 +399,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             </div>
 
             {/* Bottom Buttons */}
-            <div className="border-t-2 border-gray-300 p-4 bg-white flex justify-between">
+            <div className="border-t-2 border-gray-300 p-4 bg-white flex justify-start">
               <Button 
                 variant="outline" 
                 onClick={handleBack}
                 className="px-6 py-2 h-10 border-2 border-gray-300 bg-white text-gray-900 font-medium hover:bg-gray-50"
               >
                 BACK
-              </Button>
-              <Button 
-                disabled 
-                className="px-6 py-2 h-10 bg-gray-300 text-gray-500 border-2 border-gray-300 cursor-not-allowed font-medium"
-              >
-                Next
               </Button>
             </div>
           </div>
