@@ -176,8 +176,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
           <div className="flex-1 flex flex-col bg-white">
             {/* Top Bar */}
             <div className="border-b-2 border-gray-300 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex-1 max-w-md">
+              <div className="flex items-center gap-1">
+                <div className="flex-1">
                   <Input
                     placeholder="Enter URL"
                     value={urlInput}
