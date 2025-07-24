@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Upload } from "lucide-react";
+import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2, FileVideo } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { Progress } from "@/components/ui/progress";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import MediaBrowser from "@/components/MediaBrowser";
 
 const EditCampaign = () => {
   const navigate = useNavigate();
@@ -35,6 +39,10 @@ const EditCampaign = () => {
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
+  const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
+  const [uploadQueue, setUploadQueue] = useState<any[]>([]);
+  const [videoList, setVideoList] = useState<any[]>([]);
+  const [draggedVideoIndex, setDraggedVideoIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     campaignName: "",
     adType: "",
@@ -60,8 +68,21 @@ const EditCampaign = () => {
     { key: "S", label: "Sat" },
   ];
 
-  // Load campaign data on component mount
+  // Load campaign data, upload queue, and video list on component mount
   useEffect(() => {
+    const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+    const savedVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
+    
+    setUploadQueue(savedQueue);
+    setVideoList(savedVideoList);
+    
+    // Simulate upload progress for items in queue
+    savedQueue.forEach((item: any, index: number) => {
+      if (item.status === 'uploading') {
+        simulateUploadProgress(item.id, index);
+      }
+    });
+
     if (id) {
       const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
       const campaign = campaigns.find((c: any) => c.id === id);
@@ -197,6 +218,109 @@ const EditCampaign = () => {
     }
   };
 
+  const simulateUploadProgress = (uploadId: number, index: number) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15 + 5; // Random progress between 5-20%
+      
+      setUploadQueue(prev => prev.map(item => 
+        item.id === uploadId 
+          ? { ...item, progress: Math.min(progress, 100) }
+          : item
+      ));
+      
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setUploadQueue(prev => {
+            const updatedQueue = prev.map(item => 
+              item.id === uploadId 
+                ? { ...item, status: 'completed', progress: 100 }
+                : item
+            );
+            
+            // Add completed video to video list
+            const completedVideo = updatedQueue.find(item => item.id === uploadId);
+            if (completedVideo) {
+              const newVideo = {
+                id: completedVideo.id,
+                name: completedVideo.title,
+                source: completedVideo.source || 'Upload',
+                duration: completedVideo.duration || '00:30',
+                uploadedAt: new Date().toISOString(),
+              };
+              
+              setVideoList(prevList => {
+                const updatedList = [...prevList, newVideo];
+                localStorage.setItem('videoList', JSON.stringify(updatedList));
+                return updatedList;
+              });
+              
+              // Hide upload progress after 2 seconds
+              setTimeout(() => {
+                setUploadQueue(prev => prev.filter(item => item.id !== uploadId));
+                const currentQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+                const filteredQueue = currentQueue.filter((item: any) => item.id !== uploadId);
+                localStorage.setItem('uploadQueue', JSON.stringify(filteredQueue));
+              }, 2000);
+            }
+            
+            return updatedQueue;
+          });
+        }, 500);
+      }
+    }, 800);
+  };
+
+  const removeFromQueue = (uploadId: number) => {
+    const updatedQueue = uploadQueue.filter(item => item.id !== uploadId);
+    setUploadQueue(updatedQueue);
+    localStorage.setItem('uploadQueue', JSON.stringify(updatedQueue));
+  };
+
+  const handleVideoRowDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedVideoIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleVideoRowDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleVideoRowDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedVideoIndex === null || draggedVideoIndex === dropIndex) {
+      setDraggedVideoIndex(null);
+      return;
+    }
+
+    const newVideoList = [...videoList];
+    const draggedVideo = newVideoList[draggedVideoIndex];
+    
+    // Remove the dragged video from its current position
+    newVideoList.splice(draggedVideoIndex, 1);
+    
+    // Insert it at the new position
+    newVideoList.splice(dropIndex, 0, draggedVideo);
+    
+    setVideoList(newVideoList);
+    localStorage.setItem('videoList', JSON.stringify(newVideoList));
+    setDraggedVideoIndex(null);
+  };
+
+  const removeVideo = (videoId: number) => {
+    const updatedVideoList = videoList.filter(video => video.id !== videoId);
+    setVideoList(updatedVideoList);
+    localStorage.setItem('videoList', JSON.stringify(updatedVideoList));
+    
+    toast({
+      title: "Video Removed",
+      description: "Video has been removed from the campaign library",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-roboto">
       {/* Header */}
@@ -249,7 +373,7 @@ const EditCampaign = () => {
 
               {/* File Upload */}
               <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Upload Media File</Label>
+                <Label className="text-sm font-medium text-gray-700">Select Media File</Label>
                 <div
                   className={cn(
                     "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
@@ -262,29 +386,15 @@ const EditCampaign = () => {
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                 >
-                  <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">
-                    Drag & drop or browse
-                  </p>
+                  <FileVideo className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                   <Button 
                     type="button" 
                     variant="outline" 
                     size="sm" 
                     className="h-8 text-sm border-gray-300 hover:bg-gray-50"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*,video/*';
-                      input.onchange = (e) => {
-                        const file = (e.target as HTMLInputElement).files?.[0];
-                        if (file) {
-                          setFormData(prev => ({ ...prev, file }));
-                        }
-                      };
-                      input.click();
-                    }}
+                    onClick={() => setMediaBrowserOpen(true)}
                   >
-                    Browse
+                    Select
                   </Button>
                   {formData.file && (
                     <p className="text-sm text-blue-600 mt-2">
@@ -295,6 +405,113 @@ const EditCampaign = () => {
               </div>
             </div>
           </div>
+
+          {/* Upload Progress Section */}
+          {uploadQueue.length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Upload Progress</h3>
+              <div className="space-y-2">
+                {uploadQueue.map((upload) => (
+                  <div key={upload.id} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium text-gray-900 truncate">{upload.title}</span>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {upload.status === 'completed' ? (
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                          ) : (
+                            <span className="text-xs text-gray-500">{Math.round(upload.progress)}%</span>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFromQueue(upload.id)}
+                            className="h-4 w-4 p-0 hover:bg-gray-200"
+                          >
+                            <X className="h-2 w-2" />
+                          </Button>
+                        </div>
+                      </div>
+                      <Progress 
+                        value={upload.progress} 
+                        className="h-1"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>
+                          {upload.status === 'completed' ? 'Completed' : 'Uploading...'}
+                        </span>
+                        <span>{new Date(upload.timestamp).toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Video List Section */}
+          {videoList.length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Library</h3>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">#</TableHead>
+                      <TableHead>Video Name</TableHead>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Duration</TableHead>
+                      <TableHead className="w-20">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {videoList.map((video, index) => (
+                      <TableRow 
+                        key={video.id}
+                        draggable
+                        onDragStart={(e) => handleVideoRowDragStart(e, index)}
+                        onDragOver={handleVideoRowDragOver}
+                        onDrop={(e) => handleVideoRowDrop(e, index)}
+                        className={cn(
+                          "cursor-move transition-colors",
+                          draggedVideoIndex === index && "opacity-50",
+                          "hover:bg-gray-50"
+                        )}
+                      >
+                        <TableCell className="font-medium">{index + 1}</TableCell>
+                        <TableCell className="font-medium">{video.name}</TableCell>
+                        <TableCell>{video.source}</TableCell>
+                        <TableCell>{video.duration}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-white border border-gray-200 shadow-lg z-50">
+                              <DropdownMenuItem>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => removeVideo(video.id)} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Remove
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
 
           {/* Ad Preview Section */}
           {formData.file && (
@@ -522,6 +739,13 @@ const EditCampaign = () => {
           </div>
         </form>
       </div>
+      
+      <MediaBrowser 
+        open={mediaBrowserOpen}
+        onOpenChange={setMediaBrowserOpen}
+        onFileSelect={(file) => setFormData(prev => ({ ...prev, file }))}
+      />
+      
       <Toaster />
     </div>
   );
