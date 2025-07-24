@@ -313,6 +313,23 @@ const Index = () => {
     });
   };
 
+  // Calculate total duration of all videos
+  const calculateTotalDuration = () => {
+    if (videoList.length === 0) return "00:00:00";
+    
+    let totalSeconds = 0;
+    videoList.forEach(video => {
+      const [minutes, seconds] = video.duration.split(':').map(Number);
+      totalSeconds += (minutes * 60) + seconds;
+    });
+    
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const remainingSeconds = totalSeconds % 60;
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-roboto">
       {/* Header */}
@@ -427,7 +444,13 @@ const Index = () => {
           {/* Video List Section */}
           {videoList.length > 0 && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Library</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Campaign Library</h3>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 flex flex-col items-center min-w-[120px]">
+                  <span className="text-xs font-medium text-blue-700 mb-1">Total Duration</span>
+                  <span className="text-lg font-bold text-blue-900 font-mono">{calculateTotalDuration()}</span>
+                </div>
+              </div>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
