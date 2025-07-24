@@ -33,12 +33,31 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
       title: "SilkeVod",
       subtitle: "Uploaded: 186 days ago",
       duration: "05:02",
+      thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop"
     },
     {
       id: 2,
       title: "Matrix Scene",
       subtitle: "Uploaded: 92 days ago", 
       duration: "03:45",
+      thumbnail: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop"
+    },
+  ];
+
+  const silkeVideos = [
+    {
+      id: 1,
+      title: "SilkeVod",
+      subtitle: "Slike ID: 1xv3dgq9z9",
+      duration: "05:02",
+      thumbnail: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=300&fit=crop"
+    },
+    {
+      id: 2,
+      title: "Matrix Scene",
+      subtitle: "Slike ID: 2bw8kx7p4m", 
+      duration: "03:45",
+      thumbnail: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=300&fit=crop"
     },
   ];
 
@@ -197,29 +216,18 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                 <div className="pr-2">
                 {selectedTab === "Silke" ? (
                   <div className="grid grid-cols-2 gap-4 pr-4">
-                    {[
-                      {
-                        id: 1,
-                        title: "SilkeVod",
-                        subtitle: "Slike ID: 1xv3dgq9z9",
-                        duration: "05:02",
-                      },
-                      {
-                        id: 2,
-                        title: "Matrix Scene",
-                        subtitle: "Slike ID: 2bw8kx7p4m", 
-                        duration: "03:45",
-                      },
-                    ].map((video) => (
+                    {silkeVideos.map((video) => (
                       <div 
                         key={video.id} 
                         className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors group"
                       >
-                        {/* Thumbnail placeholder */}
-                        <div className="relative h-24 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center overflow-hidden">
-                          <div className="w-12 h-12 border-2 border-gray-400 bg-white flex items-center justify-center">
-                            <Play className="h-5 w-5 text-gray-600 stroke-2" strokeWidth={2} />
-                          </div>
+                        {/* Thumbnail */}
+                        <div className="relative h-24 bg-gray-200 border-b-2 border-gray-300 overflow-hidden">
+                          <img 
+                            src={video.thumbnail} 
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
                           
                           {/* Hover Overlay */}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-4">
@@ -267,11 +275,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                         key={video.id} 
                         className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors group"
                       >
-                        {/* Thumbnail placeholder */}
-                        <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 flex items-center justify-center overflow-hidden">
-                          <div className="w-10 h-10 border-2 border-gray-400 bg-white flex items-center justify-center">
-                            <Play className="h-4 w-4 text-gray-600 stroke-2" strokeWidth={2} />
-                          </div>
+                        {/* Thumbnail */}
+                        <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 overflow-hidden">
+                          <img 
+                            src={video.thumbnail} 
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
                           
                           {/* Hover Overlay */}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3">
