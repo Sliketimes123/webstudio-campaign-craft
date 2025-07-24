@@ -61,6 +61,23 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
     },
   ];
 
+  const uploadsVideos = [
+    {
+      id: 1,
+      title: "Upload Video 1",
+      subtitle: "Uploaded: 2 days ago",
+      duration: "02:15",
+      thumbnail: "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=400&h=300&fit=crop"
+    },
+    {
+      id: 2,
+      title: "Upload Video 2",
+      subtitle: "Uploaded: 5 days ago", 
+      duration: "04:30",
+      thumbnail: "https://images.unsplash.com/photo-1486718448742-163732cd1544?w=400&h=300&fit=crop"
+    },
+  ];
+
   const handleFileUpload = async () => {
     try {
       setIsUploading(true);
@@ -215,14 +232,14 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
               <ScrollArea className="h-full pr-4">
                 <div className="pr-2">
                 {selectedTab === "Silke" ? (
-                  <div className="grid grid-cols-2 gap-4 pr-4">
+                  <div className="grid grid-cols-3 gap-4 pr-4">
                     {silkeVideos.map((video) => (
                       <div 
                         key={video.id} 
                         className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors group"
                       >
                         {/* Thumbnail */}
-                        <div className="relative h-24 bg-gray-200 border-b-2 border-gray-300 overflow-hidden">
+                        <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 overflow-hidden">
                           <img 
                             src={video.thumbnail} 
                             alt={video.title}
@@ -230,28 +247,82 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                           />
                           
                           {/* Hover Overlay */}
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-4">
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3">
                             <Button
                               size="sm"
-                              className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
                             >
-                              <Play className="h-4 w-4" />
+                              <Play className="h-3 w-3" />
                             </Button>
                             <Button
                               size="sm"
-                              className="h-8 w-8 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
                             >
-                              <Plus className="h-4 w-4" />
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          
+                          <div className="absolute bottom-1 right-1 bg-gray-900 text-white text-xs px-1 py-0.5 font-medium border border-gray-900">
+                            {video.duration}
+                          </div>
+                        </div>
+                        
+                        {/* Card content */}
+                        <div className="p-3">
+                          <h3 className="font-medium text-gray-900 mb-1 text-xs truncate">{video.title}</h3>
+                          <p className="text-xs text-gray-600 font-medium truncate">{video.subtitle}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : selectedTab === "Uploads" ? (
+                  <div className="grid grid-cols-3 gap-4 pr-4">
+                    {uploadsVideos.map((video) => (
+                      <div 
+                        key={video.id} 
+                        className="bg-white border-2 border-gray-300 cursor-pointer hover:border-gray-400 transition-colors group"
+                      >
+                        {/* Thumbnail */}
+                        <div className="relative h-20 bg-gray-200 border-b-2 border-gray-300 overflow-hidden">
+                          <img 
+                            src={video.thumbnail} 
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
+                          
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3">
+                            <Button
+                              size="sm"
+                              className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedVideo(video);
+                                setVideoPreviewOpen(true);
+                              }}
+                            >
+                              <Play className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedVideo(video);
+                                setVideoPreviewOpen(true);
+                              }}
+                            >
+                              <Plus className="h-3 w-3" />
                             </Button>
                           </div>
                           
