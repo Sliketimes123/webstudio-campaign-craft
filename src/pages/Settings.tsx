@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, parse } from "date-fns";
 import { Search, Edit, Eye, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
@@ -40,10 +40,32 @@ const Settings = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [memberData, setMemberData] = useState<any[]>([]);
   const rowsPerPage = 10;
 
-  // Sample data for the table
-  const memberData = [
+  // Load campaigns from localStorage
+  useEffect(() => {
+    const savedCampaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+    
+    // Convert saved campaigns to the format expected by the table
+    const formattedCampaigns = savedCampaigns.map((campaign: any, index: number) => ({
+      id: campaign.id || index + 1,
+      campaignName: campaign.campaignName,
+      fastChannel: campaign.channels?.join(', ') || 'N/A',
+      status: 'Active', // Default status for new campaigns
+      startDateTime: campaign.startDate ? 
+        format(new Date(campaign.startDate), "yyyy-MM-dd") + " " + (campaign.startTime || "09:00 AM") : 
+        format(new Date(), "yyyy-MM-dd hh:mm a"),
+      endDateTime: campaign.endDate ? 
+        format(new Date(campaign.endDate), "yyyy-MM-dd") + " " + (campaign.endTime || "06:00 PM") : 
+        format(new Date(), "yyyy-MM-dd hh:mm a"),
+      repeatFrequency: campaign.selectedDays?.length > 0 ? 
+        campaign.selectedDays.join(', ') : 
+        'Daily'
+    }));
+
+    // Sample data for the table (keeping existing for demo)
+    const sampleData = [
     {
       id: 1,
       campaignName: "Summer Sale 2024",
@@ -270,6 +292,10 @@ const Settings = () => {
       repeatFrequency: "Thu, Fri, Sat"
     }
   ];
+
+    // Combine saved campaigns with sample data
+    setMemberData([...formattedCampaigns, ...sampleData]);
+  }, []);
 
   const campaignOptions = ["TOI Global", "Speaking Tree", "ET Fast", "NBT Entertainment"];
 
