@@ -83,8 +83,13 @@ const EditCampaign = () => {
     if (!validateForm()) {
       return;
     }
+    
+    // Automatically select the specified channels
+    const selectedChannels = ["ET Fast", "TOI Global", "Speaking Tree"];
+    
     const updatedCampaign = {
       ...formData,
+      channels: selectedChannels,
       updatedAt: new Date().toISOString(),
       id: id
     };
@@ -98,12 +103,12 @@ const EditCampaign = () => {
     localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
     toast({
       title: "Success!",
-      description: `Campaign "${formData.campaignName}" updated successfully`
+      description: `Campaign "${formData.campaignName}" saved successfully with channels: ${selectedChannels.join(', ')}`
     });
 
     // Redirect to settings page after saving
     setTimeout(() => {
-      navigate('/');
+      navigate('/settings');
     }, 1500);
   };
   const handleCancel = () => {
