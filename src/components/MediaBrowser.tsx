@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Play, Upload, Library, Triangle, UploadIcon, Search, Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,15 +12,17 @@ interface MediaBrowserProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onFileSelect?: (file: File) => void;
+  referenceDuration?: string | null;
 }
 
-const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileSelect }) => {
+const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileSelect, referenceDuration }) => {
   const [selectedTab, setSelectedTab] = useState("Library");
   const [urlInput, setUrlInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [videoPreviewOpen, setVideoPreviewOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
+  const { toast } = useToast();
 
   const navigationItems = [
     { id: "Library", label: "Library", icon: Library },
@@ -106,10 +109,24 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             return;
           }
           
+          // Generate a random duration for demo purposes (in real app, this would be extracted from video)
+          const mockDuration = "00:30"; // In real app, you'd extract actual duration
+          
+          // Check duration validation for uploads if reference duration exists
+          if (referenceDuration && mockDuration !== referenceDuration) {
+            toast({
+              title: "Duration Mismatch",
+              description: "Please select a video with the same duration as your first selected video.",
+              variant: "destructive",
+            });
+            setIsUploading(false);
+            return;
+          }
+          
           // File selected successfully, open video preview popup
           setSelectedVideo({
             title: file.name,
-            duration: "00:00",
+            duration: mockDuration,
             subtitle: `Uploaded: ${new Date().toLocaleDateString()}`,
             fileSize: Math.round(file.size / (1024 * 1024)) + 'MB'
           });
@@ -192,7 +209,19 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                     variant="outline" 
                     className="h-10 w-10 p-0 border-2 border-gray-300 bg-white hover:bg-gray-50"
                     onClick={() => {
-                      setSelectedVideo({ title: "URL Video", duration: "00:00", subtitle: "From URL" });
+                      const urlVideoDuration = "00:30"; // In real app, you'd extract duration from URL
+                      
+                      // Check duration validation for URL videos if reference duration exists
+                      if (referenceDuration && urlVideoDuration !== referenceDuration) {
+                        toast({
+                          title: "Duration Mismatch",
+                          description: "Please select a video with the same duration as your first selected video.",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      
+                      setSelectedVideo({ title: "URL Video", duration: urlVideoDuration, subtitle: "From URL" });
                       setVideoPreviewOpen(true);
                     }}
                   >
@@ -253,6 +282,15 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Check duration validation
+                                if (referenceDuration && video.duration !== referenceDuration) {
+                                  toast({
+                                    title: "Duration Mismatch",
+                                    description: "Please select a video with the same duration as your first selected video.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
@@ -264,6 +302,15 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Check duration validation
+                                if (referenceDuration && video.duration !== referenceDuration) {
+                                  toast({
+                                    title: "Duration Mismatch",
+                                    description: "Please select a video with the same duration as your first selected video.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
@@ -307,6 +354,15 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Check duration validation
+                                if (referenceDuration && video.duration !== referenceDuration) {
+                                  toast({
+                                    title: "Duration Mismatch",
+                                    description: "Please select a video with the same duration as your first selected video.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
@@ -318,6 +374,15 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Check duration validation
+                                if (referenceDuration && video.duration !== referenceDuration) {
+                                  toast({
+                                    title: "Duration Mismatch",
+                                    description: "Please select a video with the same duration as your first selected video.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
@@ -361,6 +426,15 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Check duration validation
+                                if (referenceDuration && video.duration !== referenceDuration) {
+                                  toast({
+                                    title: "Duration Mismatch",
+                                    description: "Please select a video with the same duration as your first selected video.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
@@ -372,6 +446,15 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
                               className="h-7 w-7 p-0 bg-white/20 border border-white/30 hover:bg-white/30 text-white"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Check duration validation
+                                if (referenceDuration && video.duration !== referenceDuration) {
+                                  toast({
+                                    title: "Duration Mismatch",
+                                    description: "Please select a video with the same duration as your first selected video.",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 setSelectedVideo(video);
                                 setVideoPreviewOpen(true);
                               }}
@@ -418,11 +501,23 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
         videoData={selectedVideo}
         onUseVideo={() => {
           if (selectedVideo) {
+            // Check duration validation before using video
+            if (referenceDuration && selectedVideo.duration !== referenceDuration) {
+              toast({
+                title: "Duration Mismatch",
+                description: "Please select a video with the same duration as your first selected video.",
+                variant: "destructive",
+              });
+              return;
+            }
+            
             // Add video to upload queue
             const uploadQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
             const newUpload = {
               id: Date.now(),
               title: selectedVideo.title,
+              duration: selectedVideo.duration,
+              source: 'Library',
               progress: 0,
               status: 'uploading',
               timestamp: new Date().toISOString()

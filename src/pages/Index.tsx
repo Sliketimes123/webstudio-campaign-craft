@@ -42,6 +42,7 @@ const Index = () => {
   const [uploadQueue, setUploadQueue] = useState<any[]>([]);
   const [videoList, setVideoList] = useState<any[]>([]);
   const [draggedVideoIndex, setDraggedVideoIndex] = useState<number | null>(null);
+  const [referenceDuration, setReferenceDuration] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     campaignName: "",
     adType: "Video Ad",
@@ -72,9 +73,18 @@ const Index = () => {
     const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
     const savedVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
     const savedCampaignName = localStorage.getItem('currentCampaignName') || '';
+    const savedReferenceDuration = localStorage.getItem('referenceDuration');
     
     setUploadQueue(savedQueue);
     setVideoList(savedVideoList);
+    setReferenceDuration(savedReferenceDuration);
+    
+    // Set reference duration from first video if it exists and no reference is saved
+    if (!savedReferenceDuration && savedVideoList.length > 0) {
+      const firstVideoDuration = savedVideoList[0].duration;
+      setReferenceDuration(firstVideoDuration);
+      localStorage.setItem('referenceDuration', firstVideoDuration);
+    }
     
     // Restore campaign name if it exists
     if (savedCampaignName) {
@@ -113,17 +123,26 @@ const Index = () => {
             // Add completed video to video list
             const completedVideo = updatedQueue.find(item => item.id === uploadId);
             if (completedVideo) {
+              const videoDuration = completedVideo.duration || '00:30';
+              
               const newVideo = {
                 id: completedVideo.id,
                 name: completedVideo.title,
                 source: completedVideo.source || 'Upload',
-                duration: completedVideo.duration || '00:30',
+                duration: videoDuration,
                 uploadedAt: new Date().toISOString(),
               };
               
               setVideoList(prevList => {
                 const updatedList = [...prevList, newVideo];
                 localStorage.setItem('videoList', JSON.stringify(updatedList));
+                
+                // Set reference duration if this is the first video
+                if (updatedList.length === 1 && !referenceDuration) {
+                  setReferenceDuration(videoDuration);
+                  localStorage.setItem('referenceDuration', videoDuration);
+                }
+                
                 return updatedList;
               });
               
@@ -201,8 +220,9 @@ const Index = () => {
     existingCampaigns.push(campaignData);
     localStorage.setItem('campaigns', JSON.stringify(existingCampaigns));
     
-    // Clear persisted campaign name after successful save
+    // Clear persisted campaign name and reference duration after successful save
     localStorage.removeItem('currentCampaignName');
+    localStorage.removeItem('referenceDuration');
     
     toast({
       title: "Success!",
@@ -230,8 +250,9 @@ const Index = () => {
   };
 
   const handleCancel = () => {
-    // Clear persisted campaign name on cancel
+    // Clear persisted campaign name and reference duration on cancel
     localStorage.removeItem('currentCampaignName');
+    localStorage.removeItem('referenceDuration');
     navigate(-1); // Go back to previous page
   };
 
@@ -306,6 +327,12 @@ const Index = () => {
     const updatedVideoList = videoList.filter(video => video.id !== videoId);
     setVideoList(updatedVideoList);
     localStorage.setItem('videoList', JSON.stringify(updatedVideoList));
+    
+    // Clear reference duration if no videos left
+    if (updatedVideoList.length === 0) {
+      setReferenceDuration(null);
+      localStorage.removeItem('referenceDuration');
+    }
     
     toast({
       title: "Video Removed",
@@ -536,6 +563,7 @@ const Index = () => {
         open={mediaBrowserOpen}
         onOpenChange={setMediaBrowserOpen}
         onFileSelect={(file) => setFormData(prev => ({ ...prev, file }))}
+        referenceDuration={referenceDuration}
       />
       
       <Toaster />
