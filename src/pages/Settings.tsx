@@ -481,15 +481,14 @@ const Settings = () => {
                       <Table>
                         <TableHeader>
                           <TableRow className="border-b border-gray-200 bg-gray-50/50">
-                            <TableHead className="text-left font-medium text-gray-900 py-4">#</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 w-16">#</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Name</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden sm:table-cell">Fast Channel</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Status</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Schedule</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden xl:table-cell">Total Duration</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4">Action</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Total Duration</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 w-32">Action</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -521,15 +520,10 @@ const Settings = () => {
                               <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.startDateTime)}</TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.endDateTime)}</TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
-                                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                                  {item.repeatFrequency}
+                                <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-md text-xs font-medium">
+                                  {calculateTotalDuration(item.campaignName)}
                                 </span>
                               </TableCell>
-                               <TableCell className="text-left text-gray-900 py-4 hidden xl:table-cell">
-                                 <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-md text-xs font-medium">
-                                   {calculateTotalDuration(item.campaignName)}
-                                 </span>
-                               </TableCell>
                               <TableCell className="text-left py-4">
                                 <div className="flex items-center gap-2">
                                    <Tooltip>
