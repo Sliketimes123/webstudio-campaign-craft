@@ -499,10 +499,32 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
         open={videoPreviewOpen}
         onOpenChange={setVideoPreviewOpen}
         videoData={selectedVideo}
-        onUseVideo={() => {
+        onUseVideo={(trimmedDuration) => {
           if (selectedVideo) {
+            // Use trimmed duration if available, otherwise use original duration
+            const finalDuration = trimmedDuration || selectedVideo.duration;
+            
+            // Convert to MM:SS format for consistency
+            const formatDuration = (duration: string) => {
+              if (duration.includes(':')) {
+                const parts = duration.split(':');
+                if (parts.length === 3) {
+                  // HH:MM:SS -> MM:SS
+                  const hours = parseInt(parts[0]);
+                  const minutes = parseInt(parts[1]);
+                  const seconds = parseInt(parts[2]);
+                  const totalMinutes = hours * 60 + minutes;
+                  return `${totalMinutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                return duration; // Already MM:SS format
+              }
+              return duration;
+            };
+            
+            const formattedDuration = formatDuration(finalDuration);
+            
             // Check duration validation before using video
-            if (referenceDuration && selectedVideo.duration !== referenceDuration) {
+            if (referenceDuration && formattedDuration !== referenceDuration) {
               toast({
                 title: "Duration Mismatch",
                 description: "Please select a video with the same duration as your first selected video.",
@@ -516,7 +538,9 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             const newUpload = {
               id: Date.now(),
               title: selectedVideo.title,
-              duration: selectedVideo.duration,
+              duration: formattedDuration,
+              originalDuration: selectedVideo.duration,
+              trimmedDuration: trimmedDuration,
               source: 'Library',
               progress: 0,
               status: 'uploading',

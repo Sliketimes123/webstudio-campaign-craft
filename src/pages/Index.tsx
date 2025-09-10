@@ -1,27 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2, FileVideo } from "lucide-react";
+import { X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2, FileVideo } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -34,10 +17,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
-  const [repeatFrequencyEnabled, setRepeatFrequencyEnabled] = useState(false);
   const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<any[]>([]);
   const [videoList, setVideoList] = useState<any[]>([]);
@@ -55,18 +35,6 @@ const Index = () => {
     loopFrequency: 1,
   });
 
-  const existingCampaigns = ["Default", "Campaign 1", "Campaign 2", "Campaign 3"];
-  const adTypes = ["Image", "L-band Ad", "U-band Ad", "Video Ad"];
-  const channels = ["ET Fast", "Speaking Tree", "TOI Global", "NBT Entertainment"];
-  const days = [
-    { key: "S", label: "Sun" },
-    { key: "M", label: "Mon" },
-    { key: "T", label: "Tue" },
-    { key: "W", label: "Wed" },
-    { key: "T", label: "Thu" },
-    { key: "F", label: "Fri" },
-    { key: "S", label: "Sat" },
-  ];
 
   // Load upload queue, video list, and persist campaign name from localStorage on component mount
   useEffect(() => {
@@ -130,6 +98,8 @@ const Index = () => {
                 name: completedVideo.title,
                 source: completedVideo.source || 'Upload',
                 duration: videoDuration,
+                originalDuration: completedVideo.originalDuration || videoDuration,
+                trimmedDuration: completedVideo.trimmedDuration,
                 uploadedAt: new Date().toISOString(),
               };
               
@@ -178,24 +148,6 @@ const Index = () => {
       return false;
     }
     
-    if (!formData.adType) {
-      toast({
-        title: "Validation Error", 
-        description: "Ad type selection is required",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    if (selectedChannels.length === 0) {
-      toast({
-        title: "Validation Error",
-        description: "At least one channel must be selected",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
     return true;
   };
 
@@ -207,10 +159,9 @@ const Index = () => {
     }
 
     const campaignData = {
-      ...formData,
-      channels: selectedChannels,
-      selectedDays: repeatFrequencyEnabled ? selectedDays : [],
-      repeatFrequencyEnabled,
+      campaignName: formData.campaignName,
+      file: formData.file,
+      videoList: videoList, // Include the video list in the campaign data
       createdAt: new Date().toISOString(),
       id: Date.now().toString(), // Simple ID generation
     };
@@ -224,16 +175,20 @@ const Index = () => {
     localStorage.removeItem('currentCampaignName');
     localStorage.removeItem('referenceDuration');
     
+    // Clear video list and upload queue after successful save
+    setVideoList([]);
+    setUploadQueue([]);
+    localStorage.removeItem('videoList');
+    localStorage.removeItem('uploadQueue');
+    
     toast({
       title: "Success!",
-      description: `Campaign "${formData.campaignName}" saved successfully`,
+      description: `Campaign "${formData.campaignName}" saved successfully with ${videoList.length} video(s)`,
     });
     
-    // Reset form data except campaign name
-    setFormData(prev => ({
-      ...prev,
-      // Keep campaign name intact
-      adType: "Video Ad",
+    // Reset form data
+    setFormData({
+      campaignName: "",
       file: null,
       startDate: undefined,
       endDate: undefined,
@@ -241,7 +196,7 @@ const Index = () => {
       endTime: "",
       loopCampaign: false,
       loopFrequency: 1,
-    }));
+    });
     
     // Redirect to settings page after saving
     setTimeout(() => {
@@ -256,21 +211,6 @@ const Index = () => {
     navigate(-1); // Go back to previous page
   };
 
-  const toggleDay = (dayKey: string) => {
-    setSelectedDays(prev => 
-      prev.includes(dayKey)
-        ? prev.filter(day => day !== dayKey)
-        : [...prev, dayKey]
-    );
-  };
-
-  const toggleChannel = (channel: string) => {
-    setSelectedChannels(prev =>
-      prev.includes(channel)
-        ? prev.filter(ch => ch !== channel)
-        : [...prev, channel]
-    );
-  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -390,6 +330,7 @@ const Index = () => {
             </div>
           </div>
 
+
           {/* Upload Media File */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="space-y-3">
@@ -468,6 +409,7 @@ const Index = () => {
             </div>
           )}
 
+
           {/* Video List Section */}
           {videoList.length > 0 && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -506,7 +448,14 @@ const Index = () => {
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell className="font-medium">{video.name}</TableCell>
                         <TableCell>{video.source}</TableCell>
-                        <TableCell>{video.duration}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{video.duration}</span>
+                            {video.trimmedDuration && video.trimmedDuration !== video.originalDuration && (
+                              <span className="text-xs text-blue-600">(trimmed)</span>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

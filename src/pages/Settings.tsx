@@ -51,17 +51,13 @@ const Settings = () => {
     const formattedCampaigns = savedCampaigns.map((campaign: any, index: number) => ({
       id: campaign.id || index + 1,
       campaignName: campaign.campaignName,
-      fastChannel: campaign.channels?.join(', ') || 'N/A',
+      fastChannel: 'External Platform', // Since channels are handled by external platform
       status: 'Active', // Default status for new campaigns
-      startDateTime: campaign.startDate ? 
-        format(new Date(campaign.startDate), "yyyy-MM-dd") + " " + (campaign.startTime || "09:00 AM") : 
-        format(new Date(), "yyyy-MM-dd hh:mm a"),
-      endDateTime: campaign.endDate ? 
-        format(new Date(campaign.endDate), "yyyy-MM-dd") + " " + (campaign.endTime || "06:00 PM") : 
-        format(new Date(), "yyyy-MM-dd hh:mm a"),
-      repeatFrequency: campaign.selectedDays?.length > 0 ? 
-        campaign.selectedDays.join(', ') : 
-        'Daily'
+      startDateTime: format(new Date(), "yyyy-MM-dd hh:mm a"), // Default to current time
+      endDateTime: format(new Date(), "yyyy-MM-dd hh:mm a"), // Default to current time
+      repeatFrequency: 'External Platform', // Since scheduling is handled by external platform
+      videoCount: campaign.videoList?.length || 0,
+      totalDuration: campaign.videoList?.length > 0 ? calculateCampaignDuration(campaign.videoList) : '00:00'
     }));
 
     // Sample data for the table (keeping existing for demo)
@@ -73,7 +69,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-15 09:00 AM",
       endDateTime: "2024-02-15 06:00 PM",
-      repeatFrequency: "Mon, Wed, Fri"
+      repeatFrequency: "Mon, Wed, Fri",
+      videoCount: 3,
+      totalDuration: "02:30"
     },
     {
       id: 2,
@@ -82,7 +80,9 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-01-14 08:00 AM",
       endDateTime: "2024-01-31 11:59 PM",
-      repeatFrequency: "Daily"
+      repeatFrequency: "Daily",
+      videoCount: 2,
+      totalDuration: "01:45"
     },
     {
       id: 3,
@@ -91,7 +91,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-01 12:00 AM",
       endDateTime: "2024-01-07 11:59 PM",
-      repeatFrequency: "Weekends"
+      repeatFrequency: "Weekends",
+      videoCount: 1,
+      totalDuration: "00:30"
     },
     {
       id: 4,
@@ -100,7 +102,9 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-02-01 06:00 AM",
       endDateTime: "2024-02-07 10:00 PM",
-      repeatFrequency: "Tue, Thu, Sat"
+      repeatFrequency: "Tue, Thu, Sat",
+      videoCount: 5,
+      totalDuration: "04:15"
     },
     {
       id: 5,
@@ -109,7 +113,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-20 10:00 AM",
       endDateTime: "2024-01-22 05:00 PM",
-      repeatFrequency: "Mon, Tue, Wed"
+      repeatFrequency: "Mon, Tue, Wed",
+      videoCount: 4,
+      totalDuration: "03:20"
     },
     {
       id: 6,
@@ -118,7 +124,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-08-15 07:00 AM",
       endDateTime: "2024-09-15 08:00 PM",
-      repeatFrequency: "Weekdays"
+      repeatFrequency: "Weekdays",
+      videoCount: 3,
+      totalDuration: "02:15"
     },
     {
       id: 7,
@@ -127,7 +135,9 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-11-24 12:00 AM",
       endDateTime: "2024-11-26 11:59 PM",
-      repeatFrequency: "Fri, Sat, Sun"
+      repeatFrequency: "Fri, Sat, Sun",
+      videoCount: 2,
+      totalDuration: "01:30"
     },
     {
       id: 8,
@@ -136,7 +146,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-12-01 08:00 AM",
       endDateTime: "2024-02-28 09:00 PM",
-      repeatFrequency: "Daily"
+      repeatFrequency: "Daily",
+      videoCount: 6,
+      totalDuration: "05:45"
     },
     {
       id: 9,
@@ -145,7 +157,9 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-02-10 09:00 AM",
       endDateTime: "2024-02-14 11:59 PM",
-      repeatFrequency: "Mon, Wed, Fri"
+      repeatFrequency: "Mon, Wed, Fri",
+      videoCount: 1,
+      totalDuration: "00:45"
     },
     {
       id: 10,
@@ -154,7 +168,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-03-25 08:00 AM",
       endDateTime: "2024-04-01 10:00 PM",
-      repeatFrequency: "Weekends"
+      repeatFrequency: "Weekends",
+      videoCount: 4,
+      totalDuration: "03:30"
     },
     {
       id: 11,
@@ -163,7 +179,9 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-05-08 09:00 AM",
       endDateTime: "2024-05-12 08:00 PM",
-      repeatFrequency: "Thu, Fri, Sat, Sun"
+      repeatFrequency: "Thu, Fri, Sat, Sun",
+      videoCount: 2,
+      totalDuration: "01:20"
     },
     {
       id: 12,
@@ -172,7 +190,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-06-15 10:00 AM",
       endDateTime: "2024-06-16 11:00 PM",
-      repeatFrequency: "Sat, Sun"
+      repeatFrequency: "Sat, Sun",
+      videoCount: 3,
+      totalDuration: "02:10"
     },
     {
       id: 13,
@@ -181,7 +201,9 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-07-04 07:00 AM",
       endDateTime: "2024-07-04 11:59 PM",
-      repeatFrequency: "Thu"
+      repeatFrequency: "Thu",
+      videoCount: 1,
+      totalDuration: "00:30"
     },
     {
       id: 14,
@@ -190,7 +212,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-09-01 08:00 AM",
       endDateTime: "2024-09-03 10:00 PM",
-      repeatFrequency: "Fri, Sat, Sun, Mon"
+      repeatFrequency: "Fri, Sat, Sun, Mon",
+      videoCount: 5,
+      totalDuration: "04:00"
     },
     {
       id: 15,
@@ -199,7 +223,9 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-10-28 06:00 PM",
       endDateTime: "2024-10-31 11:59 PM",
-      repeatFrequency: "Mon, Tue, Wed, Thu"
+      repeatFrequency: "Mon, Tue, Wed, Thu",
+      videoCount: 3,
+      totalDuration: "02:30"
     },
     {
       id: 16,
@@ -208,7 +234,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-11-25 09:00 AM",
       endDateTime: "2024-11-28 11:59 PM",
-      repeatFrequency: "Mon, Tue, Wed, Thu"
+      repeatFrequency: "Mon, Tue, Wed, Thu",
+      videoCount: 4,
+      totalDuration: "03:15"
     },
     {
       id: 17,
@@ -217,7 +245,9 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-12-20 08:00 AM",
       endDateTime: "2024-12-25 11:59 PM",
-      repeatFrequency: "Daily"
+      repeatFrequency: "Daily",
+      videoCount: 6,
+      totalDuration: "05:30"
     },
     {
       id: 18,
@@ -226,7 +256,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-12-31 10:00 PM",
       endDateTime: "2025-01-01 02:00 AM",
-      repeatFrequency: "Tue, Wed"
+      repeatFrequency: "Tue, Wed",
+      videoCount: 2,
+      totalDuration: "01:45"
     },
     {
       id: 19,
@@ -235,7 +267,9 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-03-01 09:00 AM",
       endDateTime: "2024-05-31 08:00 PM",
-      repeatFrequency: "Weekdays"
+      repeatFrequency: "Weekdays",
+      videoCount: 8,
+      totalDuration: "07:20"
     },
     {
       id: 20,
@@ -244,7 +278,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-07-01 10:00 AM",
       endDateTime: "2024-08-31 09:00 PM",
-      repeatFrequency: "Weekends"
+      repeatFrequency: "Weekends",
+      videoCount: 5,
+      totalDuration: "04:45"
     },
     {
       id: 21,
@@ -253,7 +289,9 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-01-29 09:00 AM",
       endDateTime: "2024-01-29 11:59 PM",
-      repeatFrequency: "Mon"
+      repeatFrequency: "Mon",
+      videoCount: 1,
+      totalDuration: "00:30"
     },
     {
       id: 22,
@@ -262,7 +300,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-27 08:00 AM",
       endDateTime: "2024-01-28 10:00 PM",
-      repeatFrequency: "Sat, Sun"
+      repeatFrequency: "Sat, Sun",
+      videoCount: 3,
+      totalDuration: "02:15"
     },
     {
       id: 23,
@@ -271,7 +311,9 @@ const Settings = () => {
       status: "Inactive",
       startDateTime: "2024-01-24 12:00 PM",
       endDateTime: "2024-01-25 06:00 PM",
-      repeatFrequency: "Wed, Thu"
+      repeatFrequency: "Wed, Thu",
+      videoCount: 2,
+      totalDuration: "01:30"
     },
     {
       id: 24,
@@ -280,7 +322,9 @@ const Settings = () => {
       status: "Active",
       startDateTime: "2024-01-31 08:00 AM",
       endDateTime: "2024-01-31 11:59 PM",
-      repeatFrequency: "Wed"
+      repeatFrequency: "Wed",
+      videoCount: 1,
+      totalDuration: "00:45"
     },
     {
       id: 25,
@@ -289,7 +333,9 @@ const Settings = () => {
       status: "Pending",
       startDateTime: "2024-02-15 10:00 AM",
       endDateTime: "2024-02-17 08:00 PM",
-      repeatFrequency: "Thu, Fri, Sat"
+      repeatFrequency: "Thu, Fri, Sat",
+      videoCount: 4,
+      totalDuration: "03:30"
     }
   ];
 
@@ -344,7 +390,35 @@ const Settings = () => {
     }
   };
 
-  // Calculate total duration of all videos in a campaign
+  // Calculate total duration of videos in a campaign
+  const calculateCampaignDuration = (videoList: any[]) => {
+    try {
+      let totalSeconds = 0;
+      
+      videoList.forEach((video: any) => {
+        if (video.duration) {
+          // Parse duration from "mm:ss" format
+          const [minutes, seconds] = video.duration.split(':').map(Number);
+          totalSeconds += (minutes * 60) + seconds;
+        }
+      });
+      
+      // If no videos, return 00:00
+      if (totalSeconds === 0) {
+        return "00:00";
+      }
+      
+      // Convert total seconds back to mm:ss format
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const remainingSeconds = totalSeconds % 60;
+      
+      return `${totalMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    } catch (error) {
+      return "00:00";
+    }
+  };
+
+  // Calculate total duration of all videos in a campaign (legacy function for sample data)
   const calculateTotalDuration = (campaignName: string) => {
     try {
       // Get videos from localStorage (same as in Index.tsx)
@@ -483,10 +557,11 @@ const Settings = () => {
                           <TableRow className="border-b border-gray-200 bg-gray-50/50">
                             <TableHead className="text-left font-medium text-gray-900 py-4 w-16">#</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Name</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden sm:table-cell">Fast Channel</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden sm:table-cell">Platform</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4">Status</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Start Date</TableHead>
-                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">End Date</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Created Date</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden md:table-cell">Schedule</TableHead>
+                            <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Videos</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 hidden lg:table-cell">Total Duration</TableHead>
                             <TableHead className="text-left font-medium text-gray-900 py-4 w-32">Action</TableHead>
                           </TableRow>
@@ -518,10 +593,15 @@ const Settings = () => {
                                 </span>
                               </TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.startDateTime)}</TableCell>
-                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{formatDateTime(item.endDateTime)}</TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden md:table-cell">{item.repeatFrequency}</TableCell>
+                              <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
+                                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
+                                  {item.videoCount || 0} videos
+                                </span>
+                              </TableCell>
                               <TableCell className="text-left text-gray-900 py-4 hidden lg:table-cell">
                                 <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-md text-xs font-medium">
-                                  {calculateTotalDuration(item.campaignName)}
+                                  {item.totalDuration || calculateTotalDuration(item.campaignName)}
                                 </span>
                               </TableCell>
                               <TableCell className="text-left py-4">
