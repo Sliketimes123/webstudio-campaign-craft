@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, parse } from "date-fns";
-import { Search, Edit, Eye, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Edit, Eye, MoreHorizontal, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,8 @@ const Settings = () => {
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [memberData, setMemberData] = useState<any[]>([]);
+  const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
+  const [selectedCampaignDetails, setSelectedCampaignDetails] = useState<any>(null);
   const rowsPerPage = 10;
 
   // Load campaigns from localStorage
@@ -455,6 +457,50 @@ const Settings = () => {
     }
   };
 
+  // Handler functions for action buttons
+  const handleViewDetails = (campaign: any) => {
+    setSelectedCampaignDetails(campaign);
+    setViewDetailsOpen(true);
+  };
+
+  const handleDuplicate = (campaign: any) => {
+    const newCampaign = {
+      ...campaign,
+      id: Date.now().toString(),
+      campaignName: `${campaign.campaignName} (Copy)`,
+      createdAt: new Date().toISOString()
+    };
+    
+    const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+    campaigns.push(newCampaign);
+    localStorage.setItem('campaigns', JSON.stringify(campaigns));
+    
+    // Refresh the data
+    window.location.reload();
+  };
+
+  const handleArchive = (campaign: any) => {
+    const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+    const updatedCampaigns = campaigns.map((c: any) => 
+      c.id === campaign.id ? { ...c, status: 'Archived' } : c
+    );
+    localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
+    
+    // Refresh the data
+    window.location.reload();
+  };
+
+  const handleDelete = (campaign: any) => {
+    if (window.confirm(`Are you sure you want to delete the campaign "${campaign.campaignName}"?`)) {
+      const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+      const updatedCampaigns = campaigns.filter((c: any) => c.id !== campaign.id);
+      localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
+      
+      // Refresh the data
+      window.location.reload();
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50 font-['Roboto',sans-serif]">
@@ -626,6 +672,7 @@ const Settings = () => {
                                         variant="ghost"
                                         size="sm"
                                         className="h-8 w-8 p-0 hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        onClick={() => handleViewDetails(item)}
                                       >
                                         <Eye className="h-4 w-4" />
                                       </Button>
@@ -649,9 +696,24 @@ const Settings = () => {
                                       <TooltipContent>More actions</TooltipContent>
                                     </Tooltip>
                                     <DropdownMenuContent align="end" className="bg-white border border-gray-200 shadow-lg">
-                                      <DropdownMenuItem className="hover:bg-gray-50">Duplicate</DropdownMenuItem>
-                                      <DropdownMenuItem className="hover:bg-gray-50">Archive</DropdownMenuItem>
-                                      <DropdownMenuItem className="hover:bg-gray-50 text-red-600">Delete</DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        className="hover:bg-gray-50 cursor-pointer"
+                                        onClick={() => handleDuplicate(item)}
+                                      >
+                                        Duplicate
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        className="hover:bg-gray-50 cursor-pointer"
+                                        onClick={() => handleArchive(item)}
+                                      >
+                                        Archive
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        className="hover:bg-gray-50 text-red-600 cursor-pointer"
+                                        onClick={() => handleDelete(item)}
+                                      >
+                                        Delete
+                                      </DropdownMenuItem>
                                     </DropdownMenuContent>
                                   </DropdownMenu>
                                 </div>
@@ -740,6 +802,93 @@ const Settings = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* View Details Modal */}
+      {viewDetailsOpen && selectedCampaignDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Campaign Details</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setViewDetailsOpen(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-medium text-gray-700 mb-2">Campaign Name</h3>
+                    <p className="text-lg text-gray-900">{selectedCampaignDetails.campaignName}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-700 mb-2">Status</h3>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedCampaignDetails.status === 'Active' 
+                        ? 'bg-green-100 text-green-800'
+                        : selectedCampaignDetails.status === 'Inactive'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {selectedCampaignDetails.status}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-700 mb-2">Platform</h3>
+                    <p className="text-lg text-gray-900">{selectedCampaignDetails.fastChannel}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-700 mb-2">Created Date</h3>
+                    <p className="text-lg text-gray-900">{formatDateTime(selectedCampaignDetails.startDateTime)}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-700 mb-2">Schedule</h3>
+                    <p className="text-lg text-gray-900">{selectedCampaignDetails.repeatFrequency}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-700 mb-2">Videos</h3>
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-medium">
+                      {selectedCampaignDetails.videoCount || 0} videos
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-700 mb-2">Total Duration</h3>
+                    <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-md text-sm font-medium">
+                      {selectedCampaignDetails.totalDuration || '00:00'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="pt-4 border-t">
+                  <div className="flex justify-end gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => setViewDetailsOpen(false)}
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setViewDetailsOpen(false);
+                        navigate(`/edit-campaign/${selectedCampaignDetails.id}`);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Edit Campaign
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </TooltipProvider>
   );
 };

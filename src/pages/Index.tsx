@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2, FileVideo } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,6 +23,7 @@ const Index = () => {
   const [videoList, setVideoList] = useState<any[]>([]);
   const [draggedVideoIndex, setDraggedVideoIndex] = useState<number | null>(null);
   const [referenceDuration, setReferenceDuration] = useState<string | null>(null);
+  const processedItemsRef = useRef<Set<number>>(new Set());
   const [formData, setFormData] = useState({
     campaignName: "",
     adType: "Video Ad",
@@ -36,23 +37,25 @@ const Index = () => {
   });
 
 
-  // Load upload queue, video list, and persist campaign name from localStorage on component mount
+  // Load upload queue and persist campaign name from localStorage on component mount
   useEffect(() => {
     const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
-    const savedVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
     const savedCampaignName = localStorage.getItem('currentCampaignName') || '';
-    const savedReferenceDuration = localStorage.getItem('referenceDuration');
+    
+    // For new campaigns, start with empty video list and no reference duration
+    setVideoList([]);
+    setReferenceDuration(null);
+    localStorage.removeItem('referenceDuration');
+    
+    // Clean up any existing videos with incorrect trimmed duration data
+    const existingVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
+    const cleanedVideoList = existingVideoList.map((video: any) => ({
+      ...video,
+      trimmedDuration: video.trimmedDuration && video.trimmedDuration !== video.originalDuration ? video.trimmedDuration : undefined
+    }));
+    localStorage.setItem('videoList', JSON.stringify(cleanedVideoList));
     
     setUploadQueue(savedQueue);
-    setVideoList(savedVideoList);
-    setReferenceDuration(savedReferenceDuration);
-    
-    // Set reference duration from first video if it exists and no reference is saved
-    if (!savedReferenceDuration && savedVideoList.length > 0) {
-      const firstVideoDuration = savedVideoList[0].duration;
-      setReferenceDuration(firstVideoDuration);
-      localStorage.setItem('referenceDuration', firstVideoDuration);
-    }
     
     // Restore campaign name if it exists
     if (savedCampaignName) {
@@ -62,9 +65,72 @@ const Index = () => {
     // Simulate upload progress for items in queue
     savedQueue.forEach((item: any, index: number) => {
       if (item.status === 'uploading') {
+        // Mark as processed to avoid duplicate simulations
+        processedItemsRef.current.add(item.id);
         simulateUploadProgress(item.id, index);
       }
     });
+  }, []);
+
+  // Cleanup processed items on unmount
+  useEffect(() => {
+    return () => {
+      processedItemsRef.current.clear();
+    };
+  }, []);
+
+  // Check for upload queue changes when component becomes visible
+  useEffect(() => {
+    const handleFocus = () => {
+      const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+      setUploadQueue(savedQueue);
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  // Watch for new upload items and start simulation
+  useEffect(() => {
+    uploadQueue.forEach((item, index) => {
+      if (item.status === 'uploading' && !processedItemsRef.current.has(item.id)) {
+        // Mark as processed to avoid duplicate simulations
+        processedItemsRef.current.add(item.id);
+        simulateUploadProgress(item.id, index);
+      }
+    });
+  }, [uploadQueue]);
+
+  // Listen for storage changes and custom events to sync upload queue
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+      setUploadQueue(savedQueue);
+    };
+
+    const handleUploadQueueUpdate = (event: CustomEvent) => {
+      setUploadQueue(event.detail.uploadQueue);
+    };
+    
+    // Also check for changes when component becomes visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+        setUploadQueue(savedQueue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('uploadQueueUpdated', handleUploadQueueUpdate as EventListener);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('uploadQueueUpdated', handleUploadQueueUpdate as EventListener);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const simulateUploadProgress = (uploadId: number, index: number) => {
@@ -99,11 +165,17 @@ const Index = () => {
                 source: completedVideo.source || 'Upload',
                 duration: videoDuration,
                 originalDuration: completedVideo.originalDuration || videoDuration,
-                trimmedDuration: completedVideo.trimmedDuration,
+                trimmedDuration: completedVideo.trimmedDuration && completedVideo.trimmedDuration !== (completedVideo.originalDuration || videoDuration) ? completedVideo.trimmedDuration : undefined,
                 uploadedAt: new Date().toISOString(),
               };
               
               setVideoList(prevList => {
+                // Check if video already exists to prevent duplicates
+                const videoExists = prevList.some(video => video.id === newVideo.id);
+                if (videoExists) {
+                  return prevList; // Don't add duplicate
+                }
+                
                 const updatedList = [...prevList, newVideo];
                 localStorage.setItem('videoList', JSON.stringify(updatedList));
                 
@@ -115,6 +187,9 @@ const Index = () => {
                 
                 return updatedList;
               });
+              
+              // Clear the selected file from form data since it's now processed
+              setFormData(prev => ({ ...prev, file: null }));
               
               // Hide upload progress after 2 seconds
               setTimeout(() => {
@@ -198,9 +273,9 @@ const Index = () => {
       loopFrequency: 1,
     });
     
-    // Redirect to settings page after saving
+    // Redirect to campaign listing page after saving
     setTimeout(() => {
-      navigate('/settings');
+      navigate('/');
     }, 1500);
   };
 
@@ -415,9 +490,24 @@ const Index = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium text-gray-900">Campaign Library</h3>
-                <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1">
-                  <span className="text-xs font-medium text-gray-600">Total Duration:</span>
-                  <span className="text-sm font-semibold text-gray-900 font-mono">{calculateTotalDuration()}</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1">
+                    <span className="text-xs font-medium text-gray-600">Total Duration:</span>
+                    <span className="text-sm font-semibold text-gray-900 font-mono">{calculateTotalDuration()}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setVideoList([]);
+                      localStorage.removeItem('videoList');
+                      setReferenceDuration(null);
+                      localStorage.removeItem('referenceDuration');
+                    }}
+                    className="text-red-600 border-red-300 hover:bg-red-50"
+                  >
+                    Clear All
+                  </Button>
                 </div>
               </div>
               <div className="overflow-x-auto">
@@ -451,7 +541,7 @@ const Index = () => {
                         <TableCell>
                           <div className="flex flex-col">
                             <span className="font-medium">{video.duration}</span>
-                            {video.trimmedDuration && video.trimmedDuration !== video.originalDuration && (
+                            {video.trimmedDuration && (
                               <span className="text-xs text-blue-600">(trimmed)</span>
                             )}
                           </div>
@@ -510,7 +600,13 @@ const Index = () => {
       
       <MediaBrowser 
         open={mediaBrowserOpen}
-        onOpenChange={setMediaBrowserOpen}
+        onOpenChange={(open) => {
+          setMediaBrowserOpen(open);
+          // Clear file selection when MediaBrowser is closed
+          if (!open) {
+            setFormData(prev => ({ ...prev, file: null }));
+          }
+        }}
         onFileSelect={(file) => setFormData(prev => ({ ...prev, file }))}
         referenceDuration={referenceDuration}
       />

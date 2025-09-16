@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { CalendarIcon, MousePointer, X, CheckCircle, Edit, Eye, MoreHorizontal, Trash2, FileVideo } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,28 +35,36 @@ const EditCampaign = () => {
     campaignName: "",
     file: null as File | null
   });
+  const campaignLoadedRef = useRef(false);
+  const initialCampaignNameRef = useRef<string>("");
 
-  // Load campaign data, upload queue, and video list on component mount
+  // Load campaign data only once on component mount
   useEffect(() => {
-    const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
-    const savedVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
-    setUploadQueue(savedQueue);
-    setVideoList(savedVideoList);
-
-    // Simulate upload progress for items in queue
-    savedQueue.forEach((item: any, index: number) => {
-      if (item.status === 'uploading') {
-        simulateUploadProgress(item.id, index);
-      }
-    });
-    if (id) {
+    // Only load campaign data once
+    if (id && !campaignLoadedRef.current) {
       const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
       const campaign = campaigns.find((c: any) => c.id === id);
+      
       if (campaign) {
-        setFormData({
-          campaignName: campaign.campaignName || "",
+        const campaignName = campaign.campaignName || "";
+        initialCampaignNameRef.current = campaignName;
+        
+        const newFormData = {
+          campaignName: campaignName,
           file: null // Don't load existing file
-        });
+        };
+        setFormData(newFormData);
+        
+        // Load campaign-specific video list
+        if (campaign.videoList && campaign.videoList.length > 0) {
+          setVideoList(campaign.videoList);
+        } else {
+          // Fallback to global video list if campaign doesn't have its own
+          const savedVideoList = JSON.parse(localStorage.getItem('videoList') || '[]');
+          setVideoList(savedVideoList);
+        }
+        
+        campaignLoadedRef.current = true;
       } else {
         toast({
           title: "Error",
@@ -67,6 +75,48 @@ const EditCampaign = () => {
       }
     }
   }, [id, navigate, toast]);
+
+  // Separate useEffect for upload queue management
+  useEffect(() => {
+    const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+    setUploadQueue(savedQueue);
+
+    // Simulate upload progress for items in queue
+    savedQueue.forEach((item: any, index: number) => {
+      if (item.status === 'uploading') {
+        simulateUploadProgress(item.id, index);
+      }
+    });
+  }, []); // Empty dependency array - only run once
+
+  // Listen for upload queue updates
+  useEffect(() => {
+    const handleUploadQueueUpdate = () => {
+      const savedQueue = JSON.parse(localStorage.getItem('uploadQueue') || '[]');
+      setUploadQueue(savedQueue);
+      
+      // Start simulation for new uploading items
+      savedQueue.forEach((item: any, index: number) => {
+        if (item.status === 'uploading' && !item.simulationStarted) {
+          simulateUploadProgress(item.id, index);
+        }
+      });
+    };
+
+    window.addEventListener('uploadQueueUpdated', handleUploadQueueUpdate);
+    return () => window.removeEventListener('uploadQueueUpdated', handleUploadQueueUpdate);
+  }, []);
+
+  // Protective useEffect to ensure campaign name is never lost
+  useEffect(() => {
+    if (campaignLoadedRef.current && initialCampaignNameRef.current && formData.campaignName === "") {
+      setFormData(prev => ({
+        ...prev,
+        campaignName: initialCampaignNameRef.current
+      }));
+    }
+  }, [formData.campaignName]);
+
   const validateForm = () => {
     if (!formData.campaignName.trim()) {
       toast({
@@ -90,6 +140,7 @@ const EditCampaign = () => {
     const updatedCampaign = {
       ...formData,
       channels: selectedChannels,
+      videoList: videoList, // Include the video list in the campaign update
       updatedAt: new Date().toISOString(),
       id: id
     };
@@ -103,12 +154,12 @@ const EditCampaign = () => {
     localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
     toast({
       title: "Success!",
-      description: `Campaign "${formData.campaignName}" saved successfully with channels: ${selectedChannels.join(', ')}`
+      description: `Campaign "${formData.campaignName}" updated successfully with ${videoList.length} video(s)`
     });
 
-    // Redirect to settings page after saving
+    // Redirect to campaign listing page after saving
     setTimeout(() => {
-      navigate('/settings');
+      navigate('/');
     }, 1500);
   };
   const handleCancel = () => {
@@ -166,8 +217,20 @@ const EditCampaign = () => {
               setVideoList(prevList => {
                 const updatedList = [...prevList, newVideo];
                 localStorage.setItem('videoList', JSON.stringify(updatedList));
+                
+                // Update the campaign's video list in localStorage
+                const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+                const updatedCampaigns = campaigns.map((campaign: any) => 
+                  campaign.id === id ? { ...campaign, videoList: updatedList } : campaign
+                );
+                localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
+                
                 return updatedList;
               });
+              
+              // Clear the selected file from form data since it's now processed
+              // But preserve the campaign name
+              setFormData(prev => ({ ...prev, file: null }));
 
               // Hide upload progress after 2 seconds
               setTimeout(() => {
@@ -211,13 +274,33 @@ const EditCampaign = () => {
     // Insert it at the new position
     newVideoList.splice(dropIndex, 0, draggedVideo);
     setVideoList(newVideoList);
+    
+    // Update both global video list and campaign-specific video list
     localStorage.setItem('videoList', JSON.stringify(newVideoList));
+    
+    // Update the campaign's video list in localStorage
+    const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+    const updatedCampaigns = campaigns.map((campaign: any) => 
+      campaign.id === id ? { ...campaign, videoList: newVideoList } : campaign
+    );
+    localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
+    
     setDraggedVideoIndex(null);
   };
   const removeVideo = (videoId: number) => {
     const updatedVideoList = videoList.filter(video => video.id !== videoId);
     setVideoList(updatedVideoList);
+    
+    // Update both global video list and campaign-specific video list
     localStorage.setItem('videoList', JSON.stringify(updatedVideoList));
+    
+    // Update the campaign's video list in localStorage
+    const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+    const updatedCampaigns = campaigns.map((campaign: any) => 
+      campaign.id === id ? { ...campaign, videoList: updatedVideoList } : campaign
+    );
+    localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
+    
     toast({
       title: "Video Removed",
       description: "Video has been removed from the campaign library"
@@ -311,9 +394,27 @@ const EditCampaign = () => {
           {videoList.length > 0 && <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium text-gray-900">Campaign Library</h3>
-                <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1">
-                  <span className="text-xs font-medium text-gray-600">Total Duration:</span>
-                  <span className="text-sm font-semibold text-gray-900 font-mono">{calculateTotalDuration()}</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1">
+                    <span className="text-xs font-medium text-gray-600">Total Duration:</span>
+                    <span className="text-sm font-semibold text-gray-900 font-mono">{calculateTotalDuration()}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setVideoList([]);
+                      // Update the campaign's video list in localStorage
+                      const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+                      const updatedCampaigns = campaigns.map((campaign: any) => 
+                        campaign.id === id ? { ...campaign, videoList: [] } : campaign
+                      );
+                      localStorage.setItem('campaigns', JSON.stringify(updatedCampaigns));
+                    }}
+                    className="text-red-600 border-red-300 hover:bg-red-50"
+                  >
+                    Clear All
+                  </Button>
                 </div>
               </div>
               <div className="overflow-x-auto">
@@ -384,10 +485,19 @@ const EditCampaign = () => {
         </form>
       </div>
       
-      <MediaBrowser open={mediaBrowserOpen} onOpenChange={setMediaBrowserOpen} onFileSelect={file => setFormData(prev => ({
-      ...prev,
-      file
-    }))} />
+      <MediaBrowser 
+        open={mediaBrowserOpen}
+        onOpenChange={(open) => {
+          setMediaBrowserOpen(open);
+          // Clear file selection when MediaBrowser is closed
+          if (!open) {
+            setFormData(prev => ({ ...prev, file: null }));
+          }
+        }}
+        onFileSelect={(file) => setFormData(prev => ({ ...prev, file }))}
+        referenceDuration={null}
+        isEditMode={true}
+      />
       
       <Toaster />
     </div>;

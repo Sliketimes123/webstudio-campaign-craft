@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Play, Upload, Library, Triangle, UploadIcon, Search, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +14,11 @@ interface MediaBrowserProps {
   onOpenChange: (open: boolean) => void;
   onFileSelect?: (file: File) => void;
   referenceDuration?: string | null;
+  isEditMode?: boolean;
 }
 
-const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileSelect, referenceDuration }) => {
+const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileSelect, referenceDuration, isEditMode = false }) => {
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("Library");
   const [urlInput, setUrlInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,6 +26,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
   const [videoPreviewOpen, setVideoPreviewOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const { toast } = useToast();
+
+  // Clear selected video when MediaBrowser opens
+  useEffect(() => {
+    if (open) {
+      setSelectedVideo(null);
+    }
+  }, [open]);
 
   const navigationItems = [
     { id: "Library", label: "Library", icon: Library },
@@ -123,12 +133,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
             return;
           }
           
-          // File selected successfully, open video preview popup
+          // Clear any previously selected video and set new uploaded file
           setSelectedVideo({
             title: file.name,
             duration: mockDuration,
             subtitle: `Uploaded: ${new Date().toLocaleDateString()}`,
-            fileSize: Math.round(file.size / (1024 * 1024)) + 'MB'
+            fileSize: Math.round(file.size / (1024 * 1024)) + 'MB',
+            isUploadedFile: true // Mark as uploaded file to distinguish from library videos
           });
           setVideoPreviewOpen(true);
           
@@ -154,6 +165,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
   const handleBack = () => {
     onOpenChange(false);
   };
+
+  // Clear selected video when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setSelectedVideo(null);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -540,17 +558,25 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({ open, onOpenChange, onFileS
               title: selectedVideo.title,
               duration: formattedDuration,
               originalDuration: selectedVideo.duration,
-              trimmedDuration: trimmedDuration,
+              trimmedDuration: trimmedDuration && trimmedDuration !== selectedVideo.duration ? trimmedDuration : undefined,
               source: 'Library',
               progress: 0,
               status: 'uploading',
+              simulationStarted: false,
               timestamp: new Date().toISOString()
             };
             uploadQueue.push(newUpload);
             localStorage.setItem('uploadQueue', JSON.stringify(uploadQueue));
             
-            // Navigate to campaign manager to show progress bar
-            window.location.href = '/campaign-manager';
+            // Dispatch custom event to notify other components
+            window.dispatchEvent(new CustomEvent('uploadQueueUpdated', { 
+              detail: { uploadQueue } 
+            }));
+            
+            // Only navigate to campaign manager if NOT in edit mode
+            if (!isEditMode) {
+              navigate('/campaign-manager');
+            }
           }
           onOpenChange(false);
         }}

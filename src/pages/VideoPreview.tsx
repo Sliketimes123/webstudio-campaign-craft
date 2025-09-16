@@ -342,11 +342,6 @@ const VideoPreview = ({ open, onOpenChange, videoData, onUseVideo }: VideoPrevie
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-muted-foreground mb-2">Upload Date</h3>
-                  <p className="text-lg">{videoData?.subtitle || "Unknown"}</p>
-                </div>
-                
-                <div>
                   <h3 className="font-medium text-muted-foreground mb-2">Format</h3>
                   <p className="text-lg">MP4</p>
                 </div>
@@ -357,7 +352,9 @@ const VideoPreview = ({ open, onOpenChange, videoData, onUseVideo }: VideoPrevie
                   className="w-full"
                   onClick={() => {
                     if (onUseVideo) {
-                      onUseVideo(trimmedDuration());
+                      // Only pass trimmed duration if video was actually trimmed
+                      const isTrimmed = inTime !== "00:00:00" || outTime !== secondsToTime(videoDuration);
+                      onUseVideo(isTrimmed ? trimmedDuration() : undefined);
                     }
                     onOpenChange(false);
                   }}
